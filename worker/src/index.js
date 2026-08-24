@@ -134,7 +134,7 @@ export default {
         ],
         response_format: {
           type: 'json_schema',
-          json_schema: RESPONSE_SCHEMA
+          schema: RESPONSE_SCHEMA
         }
       });
 
@@ -142,7 +142,7 @@ export default {
       return json({ ok: true, dm }, 200, origin);
     } catch (error) {
       console.error('Workers AI error', error);
-      return json({ ok: false, error: 'AI DM request failed' }, 502, origin);
+      return json({ ok: false, error: 'AI DM request failed', detail: String(error?.message || error) }, 502, origin);
     }
   }
 };
