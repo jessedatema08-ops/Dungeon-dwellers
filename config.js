@@ -4,9 +4,14 @@ window.DD_APP_VERSION='1.0.0';
 window.addEventListener('DOMContentLoaded',()=>{
   const style=document.createElement('style');
   style.textContent=`
-    .toast{position:fixed;z-index:800;left:50%;bottom:110px;transform:translate(-50%,18px);max-width:min(90vw,560px);padding:10px 14px;border:1px solid #3a414a;border-radius:12px;background:#0d1116ef;color:#e6e8ea;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.ok{border-color:#35563d}.toast.warn{border-color:#6e542c}.toast.bad{border-color:#6b3434}.isOwner .ownerOnly.buttonRow{display:flex}.criticalBoom{position:fixed;inset:0;z-index:750;pointer-events:none;background:radial-gradient(circle,rgba(255,226,151,.38),rgba(214,171,88,.12) 25%,transparent 55%);animation:ddBoom .72s ease-out both}.criticalBoom:before,.criticalBoom:after{content:"";position:absolute;left:50%;top:50%;width:18vmin;height:18vmin;border:4px solid #f4cf76;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 45px #d7aa4e}.criticalBoom:after{width:44vmin;height:44vmin;border-width:2px}.fumbleWash{position:fixed;inset:0;z-index:749;background:rgba(190,40,40,.22);pointer-events:none;animation:ddFade .48s both}@keyframes ddBoom{0%{opacity:0;transform:scale(.75)}18%{opacity:1;transform:scale(1.08)}100%{opacity:0;transform:scale(1.25)}}@keyframes ddFade{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+    .toast{position:fixed;z-index:800;left:50%;bottom:110px;transform:translate(-50%,18px);max-width:min(90vw,560px);padding:10px 14px;border:1px solid #3a414a;border-radius:12px;background:#0d1116ef;color:#e6e8ea;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.toast.ok{border-color:#35563d}.toast.warn{border-color:#6e542c}.toast.bad{border-color:#6b3434}.isOwner .ownerOnly.buttonRow{display:flex}.criticalBoom{position:fixed;inset:0;z-index:750;pointer-events:none;background:radial-gradient(circle,rgba(255,226,151,.38),rgba(214,171,88,.12) 25%,transparent 55%);animation:ddBoom .72s ease-out both}.criticalBoom:before,.criticalBoom:after{content:"";position:absolute;left:50%;top:50%;width:18vmin;height:18vmin;border:4px solid #f4cf76;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 45px #d7aa4e}.criticalBoom:after{width:44vmin;height:44vmin;border-width:2px}.fumbleWash{position:fixed;inset:0;z-index:749;background:rgba(190,40,40,.22);pointer-events:none;animation:ddFade .48s both}.sceneSubmitBar{display:flex;gap:8px;margin:0 0 12px}.sceneSubmitBar button{flex:1}.partyChatLog{max-height:280px;overflow:auto;display:grid;gap:7px;margin:10px 0}.partyMsg{border:1px solid #292f36;border-radius:11px;background:#0d1014;padding:9px 10px}.partyMsg strong{display:block;font-size:10px;color:#d3b66f}.partyMsg span{font-size:12px;color:#d3d7dc;line-height:1.4}.worldActionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.worldActionGrid button{border:1px solid #343b44;border-radius:11px;background:#101419;color:#d9dde2;padding:10px;font-size:11px}@keyframes ddBoom{0%{opacity:0;transform:scale(.75)}18%{opacity:1;transform:scale(1.08)}100%{opacity:0;transform:scale(1.25)}}@keyframes ddFade{0%{opacity:0}20%{opacity:1}100%{opacity:0}}@media(max-width:560px){.worldActionGrid{grid-template-columns:1fr 1fr}}
   `;
   document.head.appendChild(style);
+
+  const continueBtn=document.getElementById('continueTurn');
+  if(continueBtn){const bar=document.createElement('div');bar.id='sceneSubmitBar';bar.className='sceneSubmitBar hidden';bar.innerHTML='<button id="submitSceneActionBtn" class="goldBtn">Submit Scene Action</button><button id="sceneActionStatusBtn" class="ghostBtn">Scene Turn</button>';continueBtn.insertAdjacentElement('afterend',bar);}
+  const campaignPage=document.getElementById('campaignPage');
+  if(campaignPage){campaignPage.insertAdjacentHTML('beforeend',`<article class="card sectionCard"><div class="eyebrow">World Actions</div><h2>Travel, Rest, Shopping & Downtime</h2><div class="worldActionGrid"><button data-world-action="Plan travel with the party.">Travel</button><button data-world-action="Take a Short Rest if the situation allows it.">Short Rest</button><button data-world-action="Take a Long Rest if the situation allows it.">Long Rest</button><button data-world-action="Shop or speak with the available merchant.">Shopping</button><button data-world-action="Craft an item using available proficiency, materials, time, and tools.">Crafting</button><button data-world-action="Begin a downtime activity.">Downtime</button><button data-world-action="Research the current mystery or topic.">Research</button><button data-world-action="Train toward a legal skill, language, tool, or other downtime goal.">Training</button><button data-world-action="Split or regroup the party as described.">Party Split</button></div></article><article class="card sectionCard"><div class="eyebrow">Party Discussion</div><h2>Campaign Chat</h2><div id="partyChatLog" class="partyChatLog"></div><div class="composer"><input id="partyChatInput" placeholder="Message the party..."><button id="partyChatSend" class="sendBtn">›</button></div><label class="toggleRow"><span>Notify all other players</span><input id="partyMentionAll" type="checkbox"></label></article>`);}
 
   const mirror=()=>{
     const source=document.getElementById('mapFrame'),target=document.getElementById('mapFrameMapPage');
@@ -14,36 +19,35 @@ window.addEventListener('DOMContentLoaded',()=>{
     const init=document.getElementById('initiativeBlocks'),init2=document.getElementById('initiativeBlocksCampaign');
     if(init&&init2&&init2.innerHTML!==init.innerHTML)init2.innerHTML=init.innerHTML;
   };
-  new MutationObserver(mirror).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','src']});
-  setInterval(mirror,1000);mirror();
+  new MutationObserver(mirror).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','src']});setInterval(mirror,1000);mirror();
+
+  let campaignMeta=null;
+  async function refreshMeta(){const id=localStorage.getItem('ddPreferredCampaign');if(!id||!window.DungeonDB)return;try{campaignMeta=await window.DungeonDB.campaign(id);const bar=document.getElementById('sceneSubmitBar');if(bar)bar.classList.toggle('hidden',campaignMeta.active_block!=='scene');const status=document.getElementById('sceneActionStatusBtn');if(status)status.textContent=campaignMeta.active_block==='scene'?`Scene Turn · ${campaignMeta.state?.scene_turn_number||1}`:'Combat';}catch{}}
+  setInterval(refreshMeta,5000);setTimeout(refreshMeta,900);
+
+  function externalModal(title,bodyHtml,onSubmit){const root=document.getElementById('modalRoot');root.classList.remove('hidden');root.innerHTML=`<div class="modalBackdrop"><div class="modal"><div class="eyebrow">Scene Turn</div><h2>${title}</h2>${bodyHtml}<div class="buttonRow"><button id="extCancel" class="ghostBtn">Cancel</button><button id="extSubmit" class="goldBtn">Submit</button></div></div></div>`;document.getElementById('extCancel').onclick=()=>{root.classList.add('hidden');root.innerHTML='';};document.getElementById('extSubmit').onclick=()=>onSubmit(root);}
+  async function submitSceneAction(prefill=''){
+    await refreshMeta();if(!campaignMeta||campaignMeta.active_block!=='scene')return;
+    externalModal('Submit your scene action',`<p>One meaningful action is allowed for this Scene Turn. Questions, inventory review, and party discussion are free and should stay in the AI DM or party chat.</p><label class="fieldLabel">Action<textarea id="sceneActionText" rows="6" placeholder="Describe what your character actually does.">${String(prefill||'').replace(/[&<>]/g,'')}</textarea></label><label class="fieldLabel">Fallback / condition (optional)<input id="sceneFallback" placeholder="If the door is trapped, stop before opening it."></label>`,async root=>{const text=document.getElementById('sceneActionText').value.trim();if(!text)return;try{const u=await window.DungeonDB.user();const turn=Number(campaignMeta.state?.scene_turn_number||1);await window.DungeonDB.client.from('scene_submissions').upsert({campaign_id:campaignMeta.id,scene_turn_number:turn,user_id:u.id,action:{text,fallback:document.getElementById('sceneFallback').value.trim()},submitted_at:new Date().toISOString()},{onConflict:'campaign_id,scene_turn_number,user_id'});root.classList.add('hidden');root.innerHTML='';const t=document.getElementById('toast');t.textContent='Scene action submitted. You can revise it until the scene resolves.';t.className='toast show ok';setTimeout(()=>t.className='toast',3200);}catch(err){alert(err.message);}});
+  }
+  document.getElementById('submitSceneActionBtn')?.addEventListener('click',()=>submitSceneAction(''));
+  document.getElementById('sceneActionStatusBtn')?.addEventListener('click',async()=>{await refreshMeta();alert(campaignMeta?.active_block==='scene'?`Scene Turn ${campaignMeta.state?.scene_turn_number||1}. The AI resolves early when all players submit, otherwise at the deadline.`:'Combat initiative is active.');});
+
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-world-action]');if(!b)return;e.preventDefault();submitSceneAction(b.dataset.worldAction);},true);
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-intent]');if(!b||campaignMeta?.active_block!=='scene')return;e.preventDefault();e.stopImmediatePropagation();const intent=b.dataset.intent;submitSceneAction(intent==='attack'?'Attack using an explicitly chosen weapon: ':intent);},true);
 
   const attackIntent=text=>/^(?:i\s+)?(?:attack|strike|shoot|stab|slash|hit)\b|\bi\s+(?:attack|strike|shoot|stab|slash|hit)\b|\bi\s+swing\s+at\b/i.test(String(text||'').trim());
-  document.addEventListener('click',e=>{
-    if(e.target?.id!=='aiSend')return;
-    const input=document.getElementById('aiInput');if(!input||!attackIntent(input.value))return;
-    e.preventDefault();e.stopImmediatePropagation();input.value='';document.querySelector('[data-intent="attack"]')?.click();
-  },true);
-  document.addEventListener('keydown',e=>{
-    if(e.target?.id!=='aiInput'||e.key!=='Enter'||e.shiftKey||!attackIntent(e.target.value))return;
-    e.preventDefault();e.stopImmediatePropagation();e.target.value='';document.querySelector('[data-intent="attack"]')?.click();
-  },true);
+  document.addEventListener('click',e=>{if(e.target?.id!=='aiSend'||campaignMeta?.active_block==='scene')return;const input=document.getElementById('aiInput');if(!input||!attackIntent(input.value))return;e.preventDefault();e.stopImmediatePropagation();input.value='';document.querySelector('[data-intent="attack"]')?.click();},true);
+  document.addEventListener('keydown',e=>{if(e.target?.id!=='aiInput'||e.key!=='Enter'||e.shiftKey||campaignMeta?.active_block==='scene'||!attackIntent(e.target.value))return;e.preventDefault();e.stopImmediatePropagation();e.target.value='';document.querySelector('[data-intent="attack"]')?.click();},true);
 
   let lastCritical=0,lastFumble=0;
-  const impactObserver=new MutationObserver(()=>{
-    if(document.querySelector('.diceTotal.critical')&&Date.now()-lastCritical>900){lastCritical=Date.now();const b=document.createElement('div');b.className='criticalBoom';document.body.appendChild(b);setTimeout(()=>b.remove(),800);}
-    if(document.querySelector('.diceTotal.fumble')&&Date.now()-lastFumble>700){lastFumble=Date.now();const f=document.createElement('div');f.className='fumbleWash';document.body.appendChild(f);setTimeout(()=>f.remove(),520);}
-  });
-  impactObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  const impactObserver=new MutationObserver(()=>{if(document.querySelector('.diceTotal.critical')&&Date.now()-lastCritical>900){lastCritical=Date.now();const b=document.createElement('div');b.className='criticalBoom';document.body.appendChild(b);setTimeout(()=>b.remove(),800);}if(document.querySelector('.diceTotal.fumble')&&Date.now()-lastFumble>700){lastFumble=Date.now();const f=document.createElement('div');f.className='fumbleWash';document.body.appendChild(f);setTimeout(()=>f.remove(),520);}});impactObserver.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
 
   const notice=document.getElementById('sceneNotice');let visionTimer=null,lastSceneText='';
-  if(notice)new MutationObserver(()=>{
-    const text=notice.textContent||'';
-    if(!text||text===lastSceneText||/considering the action/i.test(text))return;
-    lastSceneText=text;clearTimeout(visionTimer);
-    visionTimer=setTimeout(async()=>{
-      const campaign_id=localStorage.getItem('ddPreferredCampaign');
-      if(!campaign_id||!window.ddSupabase?.functions)return;
-      try{await window.ddSupabase.functions.invoke('vision-refresh',{body:{campaign_id}});}catch(err){console.info('Vision refresh unavailable until the Edge Function is deployed.');}
-    },1400);
-  }).observe(notice,{childList:true,characterData:true,subtree:true});
+  if(notice)new MutationObserver(()=>{const text=notice.textContent||'';if(!text||text===lastSceneText||/considering the action/i.test(text))return;lastSceneText=text;clearTimeout(visionTimer);visionTimer=setTimeout(async()=>{const campaign_id=localStorage.getItem('ddPreferredCampaign');if(!campaign_id||!window.ddSupabase?.functions)return;try{await window.ddSupabase.functions.invoke('vision-refresh',{body:{campaign_id}});}catch{console.info('Vision refresh unavailable until the Edge Function is deployed.');}},1400);}).observe(notice,{childList:true,characterData:true,subtree:true});
+
+  async function refreshChat(){const id=localStorage.getItem('ddPreferredCampaign'),log=document.getElementById('partyChatLog');if(!id||!log||!window.DungeonDB)return;try{const rows=await window.DungeonDB.chat(id,60);log.innerHTML=rows.map(m=>`<div class="partyMsg"><strong>${m.user_id.slice(0,8)}</strong><span>${String(m.body).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</span></div>`).join('')||'<div class="statusLine">No party messages yet.</div>';log.scrollTop=log.scrollHeight;}catch{}}
+  document.getElementById('partyChatSend')?.addEventListener('click',async()=>{const input=document.getElementById('partyChatInput'),body=input.value.trim(),id=localStorage.getItem('ddPreferredCampaign');if(!body||!id)return;let mentions=[];if(document.getElementById('partyMentionAll').checked){const u=await window.DungeonDB.user(),members=await window.DungeonDB.members(id);mentions=members.map(m=>m.user_id).filter(x=>x!==u.id);}await window.DungeonDB.sendChat(id,body,mentions);input.value='';refreshChat();});
+  document.getElementById('partyChatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('partyChatSend').click();}});
+  setInterval(refreshChat,5000);setTimeout(refreshChat,1400);
 });
