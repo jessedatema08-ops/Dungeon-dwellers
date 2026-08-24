@@ -13,5 +13,5 @@ function extract(narration){const re=/\[\[DD_EVENT:(\{.*?\})\]\]/s,m=re.exec(nar
 window.DungeonAI={ask,extract,setProvider,getProvider};
 function addScript(src){if(document.querySelector(`script[data-dd-src="${src}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;s.dataset.ddSrc=src;document.head.appendChild(s);}
 function addStyle(href){if(document.querySelector(`link[data-dd-href="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.ddHref=href;document.head.appendChild(l);}
-addStyle('final-runtime.css?v=2');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');
+addStyle('final-runtime.css?v=2');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');
 })();
