@@ -1,9 +1,10 @@
 (()=>{
 'use strict';
-const WORKER_URL='https://dungeon-dwellers-ai.jesse-datema08.workers.dev/';
+const WORKER_URL='https://dungeon-dwellers-ai.jesse-datema08.workers.dev';
 const sendBtn=document.querySelector('[data-action="send-custom"]');
 const input=document.getElementById('customInput');
 const notice=document.getElementById('sceneNotice');
+const status=document.getElementById('campaignStatus');
 if(!sendBtn||!input||!notice)return;
 
 function getCampaignState(){
@@ -31,6 +32,7 @@ function getNarration(payload){
   if(!payload)return 'The AI DM returned no response.';
   if(typeof payload==='string')return payload;
   if(typeof payload.narration==='string')return payload.narration;
+  if(payload.dm&&typeof payload.dm.narration==='string')return payload.dm.narration;
   if(typeof payload.response==='string')return payload.response;
   if(typeof payload.result==='string')return payload.result;
   if(payload.result&&typeof payload.result.response==='string')return payload.result.response;
@@ -38,17 +40,49 @@ function getNarration(payload){
   return JSON.stringify(payload);
 }
 
-async function askAI(message){
-  const res=await fetch(WORKER_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({message,campaignState:getCampaignState()})
-  });
-  if(!res.ok){
-    const text=await res.text().catch(()=> '');
-    throw new Error(`Worker returned ${res.status}${text?`: ${text.slice(0,180)}`:''}`);
+async function parseResponse(res){
+  const text=await res.text();
+  let data;
+  try{data=text?JSON.parse(text):{};}catch{data={raw:text};}
+  if(!res.ok||data?.ok===false){
+    const detail=data?.error||data?.message||data?.raw||`HTTP ${res.status}`;
+    throw new Error(String(detail));
   }
-  return res.json();
+  return data;
+}
+
+async function checkAI(){
+  try{
+    const res=await fetch(`${WORKER_URL}/`,{method:'GET',cache:'no-store'});
+    const data=await parseResponse(res);
+    if(data?.ok){
+      if(status)status.textContent='AI DM online';
+      return true;
+    }
+  }catch(err){
+    console.warn('AI health check failed',err);
+  }
+  if(status)status.textContent='AI DM offline';
+  return false;
+}
+
+async function askAI(message){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),45000);
+  try{
+    const res=await fetch(`${WORKER_URL}/`,{
+      method:'POST',
+      mode:'cors',
+      cache:'no-store',
+      credentials:'omit',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({message,campaignState:getCampaignState()}),
+      signal:controller.signal
+    });
+    return await parseResponse(res);
+  }finally{
+    clearTimeout(timeout);
+  }
 }
 
 sendBtn.addEventListener('click',async(ev)=>{
@@ -59,13 +93,17 @@ sendBtn.addEventListener('click',async(ev)=>{
   input.value='';
   sendBtn.disabled=true;
   notice.textContent='AI DM is thinking…';
+  if(status)status.textContent='AI DM thinking';
   try{
     const payload=await askAI(message);
     notice.textContent=`AI DM: ${getNarration(payload)}`;
+    if(status)status.textContent='AI DM online';
     window.dispatchEvent(new CustomEvent('dungeon-dwellers-ai-response',{detail:payload}));
   }catch(err){
-    console.error(err);
-    notice.textContent='AI DM connection failed. Check the Cloudflare Worker deployment, Workers AI binding, and CORS settings.';
+    console.error('Dungeon Dwellers AI error',err);
+    const message=err?.name==='AbortError'?'Request timed out after 45 seconds.':(err?.message||String(err));
+    notice.textContent=`AI DM error: ${message}`;
+    if(status)status.textContent='AI DM offline';
   }finally{
     sendBtn.disabled=false;
   }
@@ -77,4 +115,6 @@ input.addEventListener('keydown',(ev)=>{
     sendBtn.click();
   }
 });
+
+checkAI();
 })();
