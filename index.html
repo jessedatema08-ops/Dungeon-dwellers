@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090b0f"><meta name="description" content="Dungeon Dwellers full interactive beta">
+<meta name="theme-color" content="#08090c"><meta name="description" content="Dungeon Dwellers full interactive beta">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css">
 <title>Dungeon Dwellers Beta v4</title>
 </head>
 <body>
 <div id="app" class="app">
-<header class="topbar"><div><div class="brand">Dungeon Dwellers</div><div class="subtitle">The Ashen Vault · Solo Campaign · Chapter 4 · Beta v4</div></div><div class="status"><span class="dot"></span><span id="campaignStatus">AI DM active</span></div></header>
+<header class="topbar"><div class="brandBlock"><div class="brand">Dungeon Dwellers</div><div class="subtitle">The Ashen Vault · Solo Campaign · Chapter 4 · Beta v4</div></div><div class="topbarRight"><div class="turnTimer" aria-label="Time remaining in current turn"><span class="timerLabel">Turn</span><strong id="turnTimerText">6h 00m</strong></div><div class="status"><span class="dot"></span><span id="campaignStatus">AI DM active</span></div></div></header>
 <nav class="nav" aria-label="Main sections">
 <button data-nav="scene" class="active">Scene</button><button data-nav="character">Character</button><button data-nav="journal">Journal</button><button data-nav="inventory">Inventory</button><button data-nav="world">World</button><button data-nav="systems">Systems</button>
 </nav>
@@ -16,14 +16,14 @@
 <main>
 <section class="page active" id="scenePage">
 <div class="layout"><div>
-<div class="card" id="sceneCard"><div class="eyebrow">Current Scene</div><p id="sceneText">You have been inside the Ashen Vault for almost two hours. Neris, the courier you rescued earlier, has led you beneath the ruined watch chapel. A bronze door to the north bears an inscription you cannot read. A collapsed shrine blocks the west wall. Something shifted in the dark beyond it a moment ago.</p>
+<div class="card sceneHero" id="sceneCard"><div class="eyebrow">Current Scene</div><p id="sceneText">You have been inside the Ashen Vault for almost two hours. Neris, the courier you rescued earlier, has led you beneath the ruined watch chapel. A bronze door to the north bears an inscription you cannot read. A collapsed shrine blocks the west wall. Something shifted in the dark beyond it a moment ago.</p>
 <div class="battlemap"><div class="grid"></div><div class="room r1"></div><div class="room r2"></div><div class="room r3"></div><div class="wall w1"></div><div class="wall w2"></div><div class="wall w3"></div><div class="wall w4"></div><div class="door"></div><div class="altar"></div><div class="rubble"></div><div class="blueglow"></div><div class="token player" id="playerToken">JD<span>Jesse · Fighter</span></div><div class="token enemy" id="enemyToken">?<span>Unknown Creature</span></div><div class="token npc">N<span>Neris</span></div><div class="fog"></div></div>
 <div class="actions"><button data-action="inspect">Inspect Shrine</button><button data-action="attack">Attack</button><button data-action="move">Move</button><button data-action="custom" class="primary">Custom Turn</button></div>
-<div class="prompt"><input id="customInput" placeholder="Ask a rules question or describe an action"><button data-action="send-custom" class="primary">Send</button></div><div class="notice" id="sceneNotice">The chamber is quiet except for water dripping behind the north wall.</div></div>
+<div class="aiComposer"><div class="composerLabel">Ask the AI DM or describe your action</div><div class="prompt"><input id="customInput" placeholder="What do you do?"><button data-action="send-custom" class="primary">Send</button></div></div><div class="notice" id="sceneNotice">The chamber is quiet except for water dripping behind the north wall.</div></div>
 <div class="card"><div class="eyebrow">Campaign Activity</div><div id="timeline" class="timeline"><div><strong>18 minutes ago in-game</strong>You spared Neris after learning she had been smuggling medicine.</div><div><strong>Quest updated</strong>Find the source of the blue light beneath the watch chapel.</div><div><strong>Private knowledge</strong>Neris trusts you enough to admit the Vault was opened once before, twenty years ago.</div></div></div>
 </div><aside>
 <div class="card"><div class="eyebrow">Your Character</div><div class="row"><span>Jesse · Champion Fighter 5</span><strong id="hpText">38 / 50 HP</strong></div><div class="meter"><span id="hpBar" style="width:76%"></span></div><div class="row"><span>AC</span><strong>18</strong></div><div class="row"><span>Speed</span><strong>30 ft</strong></div><div class="row"><span>Conditions</span><strong id="conditionText">None</strong></div><div class="row"><span>Reaction</span><strong id="reactionText">Available</strong></div><div class="featureButtons"><button data-feature="secondWind">Second Wind <b id="swCount">3/3</b></button><button data-feature="actionSurge">Action Surge <b id="asCount">1/1</b></button><button data-feature="tacticalMind">Tactical Mind</button></div></div>
-<div class="card"><div class="eyebrow">Turn State</div><div class="row"><span>Mode</span><strong id="modeText">Exploration Scene</strong></div><div class="row"><span>Response Window</span><strong>18h 42m</strong></div><div class="row"><span>In-game time</span><strong id="gameTime">9:16 PM</strong></div><div class="small">Real-world response time does not advance the in-game clock. Combat rounds remain 6 seconds.</div></div>
+<div class="card"><div class="eyebrow">Turn State</div><div class="row"><span>Mode</span><strong id="modeText">Exploration Scene</strong></div><div class="row"><span>Current Window</span><strong id="turnWindowMirror">6h 00m</strong></div><div class="row"><span>In-game time</span><strong id="gameTime">9:16 PM</strong></div><div class="small">Real-world response time does not advance the in-game clock. Combat rounds remain 6 seconds.</div></div>
 <div class="card"><div class="eyebrow">Campaign Owner</div><div class="actions compact"><button data-owner="pause">Pause</button><button data-owner="rewind">Rewind</button><button data-owner="correct">Correct State</button><button data-owner="combat">Start Combat Demo</button></div><div class="notice" id="ownerNotice">Owner tools stay separate from your player actions.</div></div>
 <div class="card"><div class="eyebrow">Reaction Window</div><p>Valid reactions create a one-hour response window.</p><button class="wide" data-action="reaction-demo">Test Reaction</button></div>
 </aside></div>
@@ -52,6 +52,9 @@
 <div class="overlay" id="modal"><div class="modal"><div class="eyebrow" id="modalKicker">Details</div><h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalChoices" class="choices"></div><div class="modalActions"><button id="modalBack">Cancel</button><button id="modalPrimary" class="primary">Use</button></div></div></div>
 <div class="overlay" id="rollModal"><div class="modal rollmodal"><div class="eyebrow" id="rollKicker">Roll</div><h2 id="rollTitle">Ready</h2><div class="dieStage" id="dieStage"><div class="flash"></div><div class="die"><svg viewBox="0 0 120 120"><polygon points="60,5 111,38 92,105 28,105 9,38"/><path d="M60 5L60 105M9 38H111M28 105L60 38L92 105M9 38L60 105L111 38"/><text id="dieNum" x="60" y="59">—</text></svg></div><div class="rollResult"><span id="rollLabel">Ready</span><strong id="rollResult">—</strong></div></div><div id="rollMath" class="rollMath"></div><button id="rollButton" class="wide primary">Roll</button><button id="rollClose" class="wide secondary">Cancel</button></div></div>
 <div id="ripple" class="ripple"></div>
+<script>
+(()=>{const key='ddTurnDeadline';let end=Number(localStorage.getItem(key));if(!end||end<=Date.now()){end=Date.now()+6*60*60*1000;localStorage.setItem(key,String(end));}const top=document.getElementById('turnTimerText'),mirror=document.getElementById('turnWindowMirror');function draw(){const left=Math.max(0,end-Date.now());const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);const text=left>0?`${h}h ${String(m).padStart(2,'0')}m`:'Expired';if(top)top.textContent=text;if(mirror)mirror.textContent=text;const timer=top?.closest('.turnTimer');if(timer){timer.classList.toggle('urgent',left>0&&left<=60*60*1000);timer.classList.toggle('expired',left===0);}if(left===0)clearInterval(id);}draw();const id=setInterval(draw,1000);})();
+</script>
 <script src="app.js"></script>
 <script src="ai-client.js"></script>
 </body></html>
