@@ -3,7 +3,7 @@
 const $=s=>document.querySelector(s);
 const modal=$('#modal'),title=$('#modalTitle'),body=$('#modalBody'),choices=$('#modalChoices'),primary=$('#modalPrimary'),back=$('#modalBack');
 if(!modal||!title||!body||!choices||!primary||!back)return;
-let bypassAttack=false,bypassSecond=false,pendingSecondButton=null;
+let bypassAttack=false,bypassSecond=false,bypassComposerAttack=false,pendingSecondButton=null;
 
 function showModal({kicker='Details',heading,html='',choiceButtons=[],primaryText=null,onPrimary=null,backText='Close'}){
   $('#modalKicker').textContent=kicker;title.textContent=heading;body.innerHTML=html;choices.innerHTML='';
@@ -27,6 +27,16 @@ document.addEventListener('click',e=>{
   if(bypassAttack){bypassAttack=false;return;}
   e.preventDefault();e.stopImmediatePropagation();
   confirmWeapon(()=>{bypassAttack=true;attack.click();},'Attack · Weapon');
+},true);
+
+const send=$('[data-action="send-custom"]'),input=$('#customInput');
+if(send&&input)send.addEventListener('click',e=>{
+  if(bypassComposerAttack){bypassComposerAttack=false;return;}
+  const text=input.value.trim();
+  const attackIntent=/^(?:i\s+)?(?:attack|strike|shoot|stab|slash|hit)\b|\bi\s+(?:attack|strike|shoot|stab|slash|hit)\b|\bi\s+swing\s+at\b/i.test(text);
+  if(!attackIntent)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  confirmWeapon(()=>{bypassComposerAttack=true;send.click();},'Custom Attack · Weapon');
 },true);
 
 choices.addEventListener('click',e=>{
