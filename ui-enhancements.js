@@ -74,5 +74,30 @@ function addSystemNote(){
   const d=document.createElement('div');d.id='masterMapSystem';d.innerHTML='<strong>Persistent Master Map</strong><span>One large campaign map can stay cached on-device. The battle map is only a moving local viewport with player-specific fog and vision, reducing repeated map transfers while keeping off-course areas ready.</span>';grid.appendChild(d);
 }
 
-setupMasterMap();setupTokens();addSystemNote();
+function setupCompactNav(){
+  if(document.getElementById('ddCompactNavFix'))return;
+  const style=document.createElement('style');
+  style.id='ddCompactNavFix';
+  style.textContent=`
+    @media (max-width:720px){
+      .app{padding-bottom:92px!important}
+      .nav{left:8px!important;right:8px!important;bottom:8px!important;transform:none!important;width:auto!important;display:flex!important;align-items:center!important;gap:4px!important;padding:6px!important;border-radius:20px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;max-height:72px!important}
+      .nav::-webkit-scrollbar{display:none!important}
+      .nav button{flex:1 0 58px!important;min-width:58px!important;min-height:54px!important;padding:5px 3px!important;gap:3px!important;border-radius:14px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important}
+      .nav button:before{width:18px!important;height:18px!important;border-radius:6px!important}
+      .nav button span{font-size:9px!important;letter-spacing:.04em!important;line-height:1!important;white-space:nowrap!important}
+      .nav [data-nav="scene"]{transform:none!important}
+      .nav [data-nav="scene"]:after{display:none!important}
+      .nav [data-nav="scene"]:before{width:22px!important;height:22px!important;border-radius:7px!important;border-width:1px!important}
+      .nav [data-nav="scene"] span{font-size:9px!important}
+    }
+    @media (max-width:390px){
+      .nav{gap:2px!important;padding:5px!important}
+      .nav button{flex-basis:52px!important;min-width:52px!important}
+      .nav button span{font-size:8px!important}
+    }`;
+  document.head.appendChild(style);
+}
+
+setupMasterMap();setupTokens();addSystemNote();setupCompactNav();
 })();
