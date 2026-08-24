@@ -40,7 +40,8 @@ Deno.serve(async (req) => {
   const { data: map } = await admin.from('campaign_maps').select('*').eq('campaign_id', campaignId).eq('active', true).order('updated_at', { ascending: false }).limit(1).maybeSingle();
   const { data: mapView } = map ? await admin.from('map_views').select('*').eq('map_id', map.id).eq('user_id', user.id).maybeSingle() : { data: null } as any;
   const { data: tokens } = await admin.from('tokens').select('*').eq('campaign_id', campaignId);
-  const { data: tokenVis } = await admin.from('token_visibility').select('*').eq('user_id', user.id).in('token_id', (tokens || []).map((t: any) => t.id));
+  const tokenIds = (tokens || []).map((t: any) => t.id);
+  const { data: tokenVis } = tokenIds.length ? await admin.from('token_visibility').select('*').eq('user_id', user.id).in('token_id', tokenIds) : { data: [] } as any;
   const visMap = new Map((tokenVis || []).map((v: any) => [v.token_id, v]));
   const visibleTokens = (tokens || []).filter((t: any) => !t.hidden || visMap.get(t.id)?.visible === true).map((t: any) => {
     const v = visMap.get(t.id);
@@ -86,7 +87,7 @@ Deno.serve(async (req) => {
   if (match) { try { event = JSON.parse(match[1]); } catch {} }
   const clean = narration.replace(match?.[0] || '', '').trim();
 
-  if (clean) await admin.from('story_events').insert({ campaign_id: campaignId, actor_user_id: user.id, event_type: 'ai_dm', payload: { summary: clean, player_message: message } });
+  // Shared authoritative updates are server-side. The browser records the visible narration once.
   if (event?.sceneSummary) await admin.from('campaigns').update({ current_scene: event.sceneSummary, state: { ...(campaign.state || {}), sceneText: event.sceneSummary }, updated_at: new Date().toISOString() }).eq('id', campaignId);
   if (event?.publicKnowledge) await admin.from('knowledge').insert({ campaign_id: campaignId, user_id: null, visibility: 'party', fact: String(event.publicKnowledge).slice(0, 4000) });
 
