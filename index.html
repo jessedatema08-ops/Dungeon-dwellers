@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090c"><meta name="description" content="Dungeon Dwellers full interactive beta">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="final-theme.css"><link rel="stylesheet" href="dice-rolls.css"><link rel="stylesheet" href="black-gold-home.css">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="final-theme.css"><link rel="stylesheet" href="dice-rolls.css"><link rel="stylesheet" href="black-gold-home.css?v=14"><link rel="stylesheet" href="home-final-v2.css?v=1">
 <title>Dungeon Dwellers Beta v4</title>
 </head>
 <body>
@@ -97,7 +97,7 @@
 
     <div class="lowerGrid">
       <div class="card mapModule">
-        <div class="eyebrow">Tactical View</div>
+        <div class="eyebrow">Battle Map</div>
         <div class="battlemap"><div class="grid"></div><div class="room r1"></div><div class="room r2"></div><div class="room r3"></div><div class="wall w1"></div><div class="wall w2"></div><div class="wall w3"></div><div class="wall w4"></div><div class="door"></div><div class="altar"></div><div class="rubble"></div><div class="blueglow"></div><div class="token player" id="playerToken">JD<span>Jesse · Fighter</span></div><div class="token enemy" id="enemyToken">?<span>Unknown Creature</span></div><div class="token npc">N<span>Neris</span></div><div class="fog"></div></div>
       </div>
 
@@ -157,8 +157,8 @@
 <script>
 (()=>{const key='ddTurnDeadline';let end=Number(localStorage.getItem(key));if(!end||end<=Date.now()){end=Date.now()+6*60*60*1000;localStorage.setItem(key,String(end));}const top=document.getElementById('turnTimerText'),mirror=document.getElementById('turnWindowMirror');function draw(){const left=Math.max(0,end-Date.now());const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);const text=left>0?`${h}h ${String(m).padStart(2,'0')}m`:'Expired';if(top)top.textContent=text;if(mirror)mirror.textContent=text;const timer=top?.closest('.turnTimer');if(timer){timer.classList.toggle('urgent',left>0&&left<=60*60*1000);timer.classList.toggle('expired',left===0);}if(left===0)clearInterval(id);}draw();const id=setInterval(draw,1000);})();
 </script>
-<script src="app.js"></script>
-<script src="ui-enhancements.js"></script>
-<script src="dice-roll-enhancer.js"></script>
-<script src="ai-client.js"></script>
+<script src="app.js?v=14"></script>
+<script src="ui-enhancements.js?v=14"></script>
+<script src="dice-roll-enhancer.js?v=14"></script>
+<script src="ai-client.js?v=14"></script>
 </body></html>
