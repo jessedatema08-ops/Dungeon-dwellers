@@ -79,4 +79,5 @@ function setupHomeShortcuts(){
 }
 
 setupMasterMap();setupTokens();addSystemNote();setupQuickIcons();setupFinalBottomNav();setupHomeShortcuts();
+const authScript=document.createElement('script');authScript.src='supabase-auth.js?v=1';authScript.defer=true;document.body.appendChild(authScript);
 })();
