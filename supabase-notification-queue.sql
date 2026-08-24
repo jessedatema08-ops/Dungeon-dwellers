@@ -58,14 +58,20 @@ end;$$;
 drop trigger if exists dd_queue_campaign_change on public.campaigns;
 create trigger dd_queue_campaign_change after update on public.campaigns for each row execute function public.queue_campaign_change();
 
+-- A browser may only queue a major-character notification for itself inside a campaign it belongs to.
+-- Backend service-role calls can queue for any affected campaign member.
 create or replace function public.queue_major_character_event(p_campaign uuid,p_user uuid,p_title text,p_body text)
 returns void language plpgsql security definer set search_path=public as $$
 begin
-  if p_campaign is null or p_user is null then return; end if;
+  if auth.role()<>'service_role' then
+    if auth.uid() is null or auth.uid()<>p_user or not public.is_campaign_member(p_campaign) then
+      raise exception 'Not allowed';
+    end if;
+  end if;
   insert into public.notification_queue(campaign_id,user_id,event_type,title,body)
   values(p_campaign,p_user,'major_character',coalesce(p_title,'Character Update'),left(coalesce(p_body,'Your character has an important update.'),180));
 end;$$;
 revoke all on function public.queue_major_character_event(uuid,uuid,text,text) from public;
-grant execute on function public.queue_major_character_event(uuid,uuid,text,text) to authenticated;
+grant execute on function public.queue_major_character_event(uuid,uuid,text,text) to authenticated,service_role;
 
 do $$ begin alter publication supabase_realtime add table public.notification_queue; exception when duplicate_object then null; end $$;
