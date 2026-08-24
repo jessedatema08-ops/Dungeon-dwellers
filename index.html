@@ -3,30 +3,121 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090c"><meta name="description" content="Dungeon Dwellers full interactive beta">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="final-theme.css"><link rel="stylesheet" href="dice-rolls.css">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="final-theme.css"><link rel="stylesheet" href="dice-rolls.css"><link rel="stylesheet" href="black-gold-home.css">
 <title>Dungeon Dwellers Beta v4</title>
 </head>
 <body>
 <div id="app" class="app">
-<header class="topbar"><div class="brandBlock"><div class="brand">Dungeon Dwellers</div><div class="subtitle">The Ashen Vault · Solo Campaign · Chapter 4 · Beta v4</div></div><div class="topbarRight"><div class="turnTimer" aria-label="Time remaining in current turn"><span class="timerLabel">Turn</span><strong id="turnTimerText">6h 00m</strong></div><div class="status"><span class="dot"></span><span id="campaignStatus">AI DM active</span></div></div></header>
-<nav class="nav" aria-label="Main sections">
-<button data-nav="scene" class="active">Scene</button><button data-nav="character">Character</button><button data-nav="journal">Journal</button><button data-nav="inventory">Inventory</button><button data-nav="world">World</button><button data-nav="systems">Systems</button>
-</nav>
+<header class="topbar">
+  <button class="topIconButton menuGhost" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
+  <div class="brandBlock">
+    <div class="brand">Dungeon<br>Dwellers</div>
+    <div class="statusPill"><span class="dot"></span><span id="campaignStatus">AI DM active</span></div>
+    <div class="subtitle">The Ashen Vault · Chapter 4</div>
+  </div>
+  <div class="topbarRight">
+    <div class="turnTimer" aria-label="Time remaining in current turn"><span class="timerLabel">Turn</span><strong id="turnTimerText">6h 00m</strong></div>
+    <button class="topIconButton gearGhost" type="button" aria-label="Open settings"><span class="gearCore"></span></button>
+  </div>
+</header>
 
 <main>
 <section class="page active" id="scenePage">
-<div class="layout"><div>
-<div class="card sceneHero" id="sceneCard"><div class="eyebrow">Current Scene</div><p id="sceneText">You have been inside the Ashen Vault for almost two hours. Neris, the courier you rescued earlier, has led you beneath the ruined watch chapel. A bronze door to the north bears an inscription you cannot read. A collapsed shrine blocks the west wall. Something shifted in the dark beyond it a moment ago.</p>
-<div class="battlemap"><div class="grid"></div><div class="room r1"></div><div class="room r2"></div><div class="room r3"></div><div class="wall w1"></div><div class="wall w2"></div><div class="wall w3"></div><div class="wall w4"></div><div class="door"></div><div class="altar"></div><div class="rubble"></div><div class="blueglow"></div><div class="token player" id="playerToken">JD<span>Jesse · Fighter</span></div><div class="token enemy" id="enemyToken">?<span>Unknown Creature</span></div><div class="token npc">N<span>Neris</span></div><div class="fog"></div></div>
-<div class="actions"><button data-action="inspect">Inspect Shrine</button><button data-action="attack">Attack</button><button data-action="move">Move</button><button data-action="custom" class="primary">Custom Turn</button></div>
-<div class="aiComposer"><div class="composerLabel">Ask the AI DM or describe your action</div><div class="prompt"><input id="customInput" placeholder="What do you do?"><button data-action="send-custom" class="primary">Send</button></div></div><div class="notice" id="sceneNotice">The chamber is quiet except for water dripping behind the north wall.</div></div>
-<div class="card"><div class="eyebrow">Campaign Activity</div><div id="timeline" class="timeline"><div><strong>18 minutes ago in-game</strong>You spared Neris after learning she had been smuggling medicine.</div><div><strong>Quest updated</strong>Find the source of the blue light beneath the watch chapel.</div><div><strong>Private knowledge</strong>Neris trusts you enough to admit the Vault was opened once before, twenty years ago.</div></div></div>
-</div><aside>
-<div class="card"><div class="eyebrow">Your Character</div><div class="row"><span>Jesse · Champion Fighter 5</span><strong id="hpText">38 / 50 HP</strong></div><div class="meter"><span id="hpBar" style="width:76%"></span></div><div class="row"><span>AC</span><strong>18</strong></div><div class="row"><span>Speed</span><strong>30 ft</strong></div><div class="row"><span>Conditions</span><strong id="conditionText">None</strong></div><div class="row"><span>Reaction</span><strong id="reactionText">Available</strong></div><div class="featureButtons"><button data-feature="secondWind">Second Wind <b id="swCount">3/3</b></button><button data-feature="actionSurge">Action Surge <b id="asCount">1/1</b></button><button data-feature="tacticalMind">Tactical Mind</button></div></div>
-<div class="card"><div class="eyebrow">Turn State</div><div class="row"><span>Mode</span><strong id="modeText">Exploration Scene</strong></div><div class="row"><span>Current Window</span><strong id="turnWindowMirror">6h 00m</strong></div><div class="row"><span>In-game time</span><strong id="gameTime">9:16 PM</strong></div><div class="small">Real-world response time does not advance the in-game clock. Combat rounds remain 6 seconds.</div></div>
-<div class="card"><div class="eyebrow">Campaign Owner</div><div class="actions compact"><button data-owner="pause">Pause</button><button data-owner="rewind">Rewind</button><button data-owner="correct">Correct State</button><button data-owner="combat">Start Combat Demo</button></div><div class="notice" id="ownerNotice">Owner tools stay separate from your player actions.</div></div>
-<div class="card"><div class="eyebrow">Reaction Window</div><p>Valid reactions create a one-hour response window.</p><button class="wide" data-action="reaction-demo">Test Reaction</button></div>
-</aside></div>
+  <div class="homeFrame">
+    <div class="card sceneHero" id="sceneCard">
+      <div class="eyebrow">Current Scene</div>
+      <h1 class="sceneHeading">The Broken Gate</h1>
+      <div class="heroSceneGrid">
+        <div class="sceneNarrative">
+          <p id="sceneText">You have been inside the Ashen Vault for almost two hours. Neris, the courier you rescued earlier, has led you beneath the ruined watch chapel. A bronze door to the north bears an inscription you cannot read. A collapsed shrine blocks the west wall. Something shifted in the dark beyond it a moment ago.</p>
+        </div>
+        <div class="sceneIllustration" aria-hidden="true">
+          <div class="sceneIllustrationGlow"></div>
+        </div>
+      </div>
+      <div class="aiComposer sleek">
+        <div class="composerLabel">Ask the AI DM anything</div>
+        <div class="prompt"><input id="customInput" placeholder="Ask the AI DM anything..."><button data-action="send-custom" class="primary">Send</button></div>
+      </div>
+      <div class="notice" id="sceneNotice">The chamber is quiet except for water dripping behind the north wall.</div>
+    </div>
+
+    <button class="continueTurnButton" data-action="custom"><span class="ctaIcon"></span><span class="ctaText">Continue Turn</span><span class="ctaArrow"></span></button>
+
+    <div class="sceneActionRail">
+      <button data-action="inspect">Inspect Shrine</button>
+      <button data-action="attack">Attack</button>
+      <button data-action="move">Move</button>
+      <button data-action="reaction-demo">Reaction Test</button>
+    </div>
+
+    <div class="homeQuickGrid">
+      <button class="quickNavCard" data-nav="character"><span class="quickIcon character"></span><span>Character</span></button>
+      <button class="quickNavCard" data-nav="inventory"><span class="quickIcon inventory"></span><span>Inventory</span></button>
+      <button class="quickNavCard" data-nav="journal"><span class="quickIcon journal"></span><span>Journal</span></button>
+      <button class="quickNavCard" data-nav="world"><span class="quickIcon map"></span><span>Map</span></button>
+      <button class="quickNavCard" data-nav="journal"><span class="quickIcon quest"></span><span>Quests</span></button>
+    </div>
+
+    <div class="homeInfoGrid">
+      <div class="card dashboardCard">
+        <div class="eyebrow">Current Character</div>
+        <div class="characterCardBody">
+          <div class="portraitOrb"></div>
+          <div>
+            <div class="statPrimary">Jesse</div>
+            <div class="small">Level 5 Champion Fighter</div>
+            <div class="row"><strong id="hpText">38 / 50 HP</strong></div>
+            <div class="meter"><span id="hpBar" style="width:76%"></span></div>
+            <div class="smallStatRow">
+              <div class="smallStat"><i></i><span>AC 18</span></div>
+              <div class="smallStat"><i></i><span id="conditionText">None</span></div>
+              <div class="smallStat"><i></i><span id="reactionText">Available</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card dashboardCard">
+        <div class="eyebrow">Active Quest</div>
+        <div class="statPrimary" style="font-size:22px;line-height:1.2">The Blue Light Below</div>
+        <p>Find what is pulsing beneath the ruined watch chapel and determine why the lower vault has reopened.</p>
+        <div class="questProgress">2 / 3 Objectives</div>
+        <div class="small" style="margin-top:10px">In-game time <strong id="gameTime">9:16 PM</strong></div>
+      </div>
+
+      <div class="card dashboardCard pendingCard">
+        <span class="pendingDot" aria-hidden="true"></span>
+        <div class="eyebrow">Pending</div>
+        <div class="pendingLabel"><span class="pendingIcon"></span><div><strong>DM Reaction</strong><p style="margin:6px 0 0">The AI DM has a reaction to your last action.</p></div></div>
+        <div class="pendingLink">View Reaction</div>
+        <div class="small" style="margin-top:12px">Mode <strong id="modeText">Exploration Scene</strong> · Window <strong id="turnWindowMirror">6h 00m</strong></div>
+      </div>
+    </div>
+
+    <div class="lowerGrid">
+      <div class="card mapModule">
+        <div class="eyebrow">Tactical View</div>
+        <div class="battlemap"><div class="grid"></div><div class="room r1"></div><div class="room r2"></div><div class="room r3"></div><div class="wall w1"></div><div class="wall w2"></div><div class="wall w3"></div><div class="wall w4"></div><div class="door"></div><div class="altar"></div><div class="rubble"></div><div class="blueglow"></div><div class="token player" id="playerToken">JD<span>Jesse · Fighter</span></div><div class="token enemy" id="enemyToken">?<span>Unknown Creature</span></div><div class="token npc">N<span>Neris</span></div><div class="fog"></div></div>
+      </div>
+
+      <div class="card dashboardCard">
+        <div class="eyebrow">Campaign Activity</div>
+        <div id="timeline" class="timeline"><div><strong>18 minutes ago in-game</strong>You spared Neris after learning she had been smuggling medicine.</div><div><strong>Quest updated</strong>Find the source of the blue light beneath the watch chapel.</div><div><strong>Private knowledge</strong>Neris trusts you enough to admit the Vault was opened once before, twenty years ago.</div></div>
+      </div>
+    </div>
+
+    <div class="card dashboardCard">
+      <div class="eyebrow">Feature Actions</div>
+      <div class="featureButtons"><button data-feature="secondWind">Second Wind <b id="swCount">3/3</b></button><button data-feature="actionSurge">Action Surge <b id="asCount">1/1</b></button><button data-feature="tacticalMind">Tactical Mind</button></div>
+    </div>
+
+    <div class="card dashboardCard">
+      <div class="eyebrow">Campaign Owner</div>
+      <div class="ownerTools"><button data-owner="pause">Pause</button><button data-owner="rewind">Rewind</button><button data-owner="correct">Correct State</button><button data-owner="combat">Start Combat Demo</button></div>
+      <div class="notice" id="ownerNotice">Owner tools stay separate from your player actions.</div>
+    </div>
+  </div>
 </section>
 
 <section class="page" id="characterPage"><div class="layout"><div class="card"><div class="eyebrow">Character Sheet · 2024 Rules</div><div class="featureGrid">
@@ -34,10 +125,12 @@
 <div><strong>Fighter 5</strong><span>PB +3 · Extra Attack · Tactical Shift · Action Surge · Tactical Mind · Second Wind 3 uses · Weapon Mastery 4</span></div>
 <div><strong>Champion 3+</strong><span>Improved Critical (19–20) · Remarkable Athlete (Advantage on Initiative and Athletics checks)</span></div>
 <div><strong>Languages</strong><span>Common · Dwarvish. Unknown inscriptions remain untranslated until legitimately understood.</span></div>
+<div><strong>Spellcasting</strong><span>This character has no spells. No cantrips, prepared spells, spell slots, or innate spellcasting are available.</span></div>
+<div><strong>Character Verification</strong><span>The AI DM is expected to verify class features, resources, equipment, and legal actions against this character profile.</span></div>
 </div><div class="eyebrow spaced">Feature Actions</div><div class="actions"><button data-feature="secondWind">Second Wind</button><button data-feature="actionSurge">Action Surge</button><button data-feature="tacticalMind">Tactical Mind</button><button data-action="initiative-roll">Roll Initiative</button></div></div>
 <aside><div class="card"><div class="eyebrow">Rules Tests</div><div class="actions compact"><button data-test="save">Saving Throw</button><button data-test="hidden">Hidden Check</button><button data-test="passive">Passive Perception</button><button data-test="group">Group Check</button><button data-test="concentration">Concentration Save</button><button data-test="death">Death Save</button></div></div><div class="card"><div class="eyebrow">Controlled Units</div><p>No companions, familiars, summons, or mounts are active.</p></div></aside></div></section>
 
-<section class="page" id="journalPage"><div class="layout"><div class="card"><div class="eyebrow">Quest Log</div><div class="list"><div><strong>The Blue Light Below</strong><span>Active · Find what is pulsing beneath the ruined watch chapel.</span></div><div><strong>Neris's Debt</strong><span>Optional · Decide whether to help Neris clear her brother's name.</span></div><div><strong>Old Smuggler Route</strong><span>Completed · You found a safe entrance into the Ashen Vault.</span></div></div><div class="eyebrow spaced">Previously On</div><p>Three days ago you were hired to find a missing courier. The trail led to a ruined watch chapel where you found Neris wounded and hiding from grave robbers. After helping her survive an ambush, you learned the chapel sits over the Ashen Vault, a sealed complex tied to a forgotten military order.</p></div><aside><div class="card"><div class="eyebrow">NPC Relationships</div><div class="list"><div><strong>Neris</strong><span>Trust high · Fear low · Owes you a favor.</span></div><div><strong>Quartermaster Pell</strong><span>Suspicious · Thinks you are hiding information about the Vault.</span></div></div></div><div class="card"><div class="eyebrow">Private Discoveries</div><p>Knowledge found alone remains private until you choose to share it.</p></div></aside></div></section>
+<section class="page" id="journalPage"><div class="layout"><div class="card"><div class="eyebrow">Quest Log</div><div class="list"><div><strong>The Blue Light Below</strong><span>Active · Find what is pulsing beneath the ruined watch chapel.</span></div><div><strong>Neris's Debt</strong><span>Optional · Decide whether to help Neris clear her brother's name.</span></div><div><strong>Old Smuggler Route</strong><span>Completed · You found a safe entrance into the Ashen Vault.</span></div></div><div class="eyebrow spaced">Previously On</div><p>Three days ago you were hired to find a missing courier. The trail led to a ruined watch chapel where you found Neris wounded and hiding from grave robbers. After helping her survive an ambush, you learned the chapel sits over the Ashen Vault, a sealed complex tied to a forgotten military order.</p><div class="eyebrow spaced">AI Scene History</div><div class="list"><div><strong>Entering the Lower Vault</strong><span>You and Neris descended beneath the chapel and found the bronze gate chamber.</span></div><div><strong>Recovering the Courier</strong><span>Neris was rescued from the chapel ruins and agreed to guide you below.</span></div></div></div><aside><div class="card"><div class="eyebrow">NPC Relationships</div><div class="list"><div><strong>Neris</strong><span>Trust high · Fear low · Owes you a favor.</span></div><div><strong>Quartermaster Pell</strong><span>Suspicious · Thinks you are hiding information about the Vault.</span></div></div></div><div class="card"><div class="eyebrow">Public Knowledge</div><div class="list"><div><strong>Known Fact</strong><span>The Ashen Vault was opened once before, around twenty years ago.</span></div><div><strong>Known Fact</strong><span>The bronze door bears an inscription the party cannot currently read.</span></div></div></div><div class="card"><div class="eyebrow">Private Discoveries</div><p>Knowledge found alone remains private until you choose to share it.</p></div></aside></div></section>
 
 <section class="page" id="inventoryPage"><div class="layout"><div class="card"><div class="eyebrow">Inventory</div><div class="list clickable"><button data-item="claymore"><strong>Claymore</strong><span>Rules profile: Greatsword · 2d6 Slashing · Heavy · Two-Handed · Graze · 6 lb</span></button><button data-item="potion"><strong>Healing Potion ×3</strong><span>Consumable · opens details before use.</span></button><button data-item="shield"><strong>Shield</strong><span>6 lb · carried, not usable while making a two-handed Greatsword attack.</span></button><button data-item="pack"><strong>Explorer's Pack</strong><span>Rope, torches, food, tools, and supplies.</span></button></div><div class="row"><span>Carried weight</span><strong>61 / 270 lb</strong></div></div><aside><div class="card"><div class="eyebrow">Weapon Mastery</div><p>Greatsword mastery is active: <b>Graze</b>. On a miss, deal Slashing damage equal to the ability modifier used for the attack (+4), if the target is eligible.</p></div><div class="card"><div class="eyebrow">Magic Items</div><div id="relicStatus" class="notice">No identified magic items.</div><button class="wide" data-action="relic">Take Current Relic</button></div></aside></div></section>
 
@@ -47,6 +140,15 @@
 <div><strong>Initiative Styles</strong><span>Initiative Blocks, Rolling Initiative Windows, or 24-Hour Planned Rounds.</span></div><div><strong>Reactions</strong><span>Valid trigger → notification → one-hour window → legal reactions plus Custom Reaction → forfeited if missed.</span></div><div><strong>Fog & Vision</strong><span>Player-specific fog, walls, doors, light, darkvision, blindsight, truesight, invisibility, and magical darkness.</span></div><div><strong>AI DM</strong><span>Custom Turn and rules questions now connect to the deployed Cloudflare AI Worker. Full production state validation and multiplayer persistence remain backend work.</span></div><div><strong>Rules Engine</strong><span>2024 combat structure, conditions, rests, resources, weapon mastery, saves, criticals, death, concentration, and effects.</span></div><div><strong>World Systems</strong><span>Travel, merchants, crafting, downtime, quests, relationships, companions, mounts, party splitting, and private discoveries.</span></div><div><strong>Owner Controls</strong><span>Pause, rewind, correct state, and recovery tools without granting DM authority during normal play.</span></div><div><strong>Persistence</strong><span>Beta state is stored locally. Production multiplayer state belongs in Supabase with an immutable event log.</span></div>
 </div><div class="actions spaced"><button data-system="initiative">Initiative Style</button><button data-system="notification">Test Notification</button><button data-system="split">Split Party Preview</button><button data-system="import">Character PDF Import</button><button data-system="reset">Reset Beta</button></div><div class="notice" id="systemNotice">Visible local beta controls are wired. Live AI is connected through Cloudflare; authentication, realtime multiplayer, uploaded-PDF parsing, and true remote Web Push still require the production backend.</div><input type="file" id="pdfInput" accept="application/pdf" hidden></div></section>
 </main>
+
+<nav class="nav" aria-label="Main sections">
+  <button data-nav="scene" class="active"><span>Home</span></button>
+  <button data-nav="world"><span>Campaign</span></button>
+  <button data-nav="character"><span>Character</span></button>
+  <button data-nav="inventory"><span>Inventory</span></button>
+  <button data-nav="journal"><span>Quests</span></button>
+  <button data-nav="systems"><span>More</span></button>
+</nav>
 </div>
 
 <div class="overlay" id="modal"><div class="modal"><div class="eyebrow" id="modalKicker">Details</div><h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalChoices" class="choices"></div><div class="modalActions"><button id="modalBack">Cancel</button><button id="modalPrimary" class="primary">Use</button></div></div></div>
