@@ -18,5 +18,5 @@ if(!document.getElementById('accountEmail')){
 
 function addScript(src){if(document.querySelector(`script[data-dd-src="${src}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;s.dataset.ddSrc=src;document.head.appendChild(s);}
 function addStyle(href){if(document.querySelector(`link[data-dd-href="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.ddHref=href;document.head.appendChild(l);}
-addStyle('final-runtime.css?v=3');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');addScript('community-chat.js?v=2');
+addStyle('final-runtime.css?v=4');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');addScript('community-chat.js?v=2');
 })();
