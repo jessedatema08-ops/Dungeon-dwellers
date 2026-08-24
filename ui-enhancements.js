@@ -35,6 +35,7 @@ const glyphs={
 };
 function setupQuickIcons(){document.querySelectorAll('.quickIcon').forEach(el=>{for(const key of Object.keys(glyphs)){if(el.classList.contains(key)){el.innerHTML=glyphs[key];break;}}});}
 
+let openFinalPage=null;
 function setupFinalBottomNav(){
   const nav=document.querySelector('.nav');if(!nav)return;
   nav.innerHTML=`
@@ -43,11 +44,33 @@ function setupFinalBottomNav(){
     <button type="button" class="finalCenterButton" data-final-action="turn" aria-label="Continue turn"><span class="finalNavIcon"><svg viewBox="0 0 48 48"><path d="m24 5 16 10v18L24 43 8 33V15Z"/><path d="m24 5 5 10-5 9-5-9Zm16 10-11 0 5 9 6 9M8 15h11l-5 9-6 9m6-9h20L24 43Zm5-9h10M19 15H9"/></svg></span></button>
     <button type="button" data-final-page="journal" aria-label="NPCs"><span class="finalNavIcon"><svg viewBox="0 0 48 48"><circle cx="24" cy="16" r="8"/><path d="M11 39c1-9 6-14 13-14s12 5 13 14"/><path d="M7 34c1-5 4-8 8-10M41 34c-1-5-4-8-8-10"/></svg></span><span class="finalNavLabel">NPCs</span></button>
     <button type="button" data-final-page="systems" aria-label="More"><span class="finalNavIcon"><svg viewBox="0 0 48 48"><circle cx="12" cy="24" r="2.7"/><circle cx="24" cy="24" r="2.7"/><circle cx="36" cy="24" r="2.7"/></svg></span><span class="finalNavLabel">More</span></button>`;
-  const openPage=page=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page+'Page'));nav.querySelectorAll('[data-final-page]').forEach(b=>b.classList.toggle('active',b.dataset.finalPage===page));document.body.classList.toggle('ddHomeActive',page==='scene');window.scrollTo({top:0,behavior:'auto'});};
-  nav.querySelectorAll('[data-final-page]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.finalPage)));
-  nav.querySelector('[data-final-action="turn"]')?.addEventListener('click',()=>{openPage('scene');setTimeout(()=>document.getElementById('customInput')?.focus(),160);});
+  openFinalPage=page=>{document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page+'Page'));nav.querySelectorAll('[data-final-page]').forEach(b=>b.classList.toggle('active',b.dataset.finalPage===page));document.body.classList.toggle('ddHomeActive',page==='scene');window.scrollTo({top:0,behavior:'auto'});};
+  nav.querySelectorAll('[data-final-page]').forEach(btn=>btn.addEventListener('click',()=>openFinalPage(btn.dataset.finalPage)));
+  nav.querySelector('[data-final-action="turn"]')?.addEventListener('click',()=>{openFinalPage('scene');setTimeout(()=>document.getElementById('customInput')?.focus(),160);});
   document.body.classList.add('ddHomeActive');
 }
 
-setupMasterMap();setupTokens();addSystemNote();setupQuickIcons();setupFinalBottomNav();
+function setupHomeShortcuts(){
+  document.querySelectorAll('.quickNavCard').forEach(btn=>{
+    const label=(btn.textContent||'').trim().toLowerCase();
+    btn.removeAttribute('onclick');
+    btn.addEventListener('click',()=>{
+      if(label.includes('character')) return openFinalPage?.('character');
+      if(label.includes('inventory')) return openFinalPage?.('inventory');
+      if(label.includes('journal')||label.includes('quest')) return openFinalPage?.('journal');
+      if(label.includes('map')){
+        openFinalPage?.('scene');
+        setTimeout(()=>document.querySelector('#scenePage .mapModule')?.scrollIntoView({behavior:'smooth',block:'center'}),60);
+      }
+    });
+  });
+  const gear=document.querySelector('.gearGhost');
+  if(gear){
+    gear.setAttribute('aria-label','Open settings and systems');
+    gear.title='Settings';
+    gear.addEventListener('click',()=>openFinalPage?.('systems'));
+  }
+}
+
+setupMasterMap();setupTokens();addSystemNote();setupQuickIcons();setupFinalBottomNav();setupHomeShortcuts();
 })();
