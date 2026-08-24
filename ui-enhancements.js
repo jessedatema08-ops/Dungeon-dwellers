@@ -51,19 +51,25 @@ function setupFinalBottomNav(){
 }
 
 function setupHomeShortcuts(){
-  document.querySelectorAll('.quickNavCard').forEach(btn=>{
-    const label=(btn.textContent||'').trim().toLowerCase();
-    btn.removeAttribute('onclick');
-    btn.addEventListener('click',()=>{
-      if(label.includes('character')) return openFinalPage?.('character');
-      if(label.includes('inventory')) return openFinalPage?.('inventory');
-      if(label.includes('journal')||label.includes('quest')) return openFinalPage?.('journal');
-      if(label.includes('map')){
-        openFinalPage?.('scene');
-        setTimeout(()=>document.querySelector('#scenePage .mapModule')?.scrollIntoView({behavior:'smooth',block:'center'}),60);
-      }
-    });
-  });
+  const routeShortcut=btn=>{
+    const icon=btn.querySelector('.quickIcon');
+    if(icon?.classList.contains('character')) return openFinalPage?.('character');
+    if(icon?.classList.contains('inventory')) return openFinalPage?.('inventory');
+    if(icon?.classList.contains('journal')||icon?.classList.contains('quest')) return openFinalPage?.('journal');
+    if(icon?.classList.contains('map')){
+      openFinalPage?.('scene');
+      setTimeout(()=>document.querySelector('#scenePage .mapModule')?.scrollIntoView({behavior:'smooth',block:'start'}),80);
+      return;
+    }
+  };
+  document.querySelectorAll('.quickNavCard').forEach(btn=>btn.removeAttribute('onclick'));
+  document.addEventListener('click',e=>{
+    const btn=e.target.closest('.quickNavCard');
+    if(!btn)return;
+    e.preventDefault();
+    e.stopPropagation();
+    routeShortcut(btn);
+  },true);
   const gear=document.querySelector('.gearGhost');
   if(gear){
     gear.setAttribute('aria-label','Open settings and systems');
