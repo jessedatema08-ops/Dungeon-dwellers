@@ -12,16 +12,11 @@ async function ask(message,campaignState,opts={}){if(provider.type==='supabase-e
 function extract(narration){const re=/\[\[DD_EVENT:(\{.*?\})\]\]/s,m=re.exec(narration||'');let event=null;if(m){try{event=JSON.parse(m[1]);}catch{}}return {text:String(narration||'').replace(m?.[0]||'','').trim(),event};}
 window.DungeonAI={ask,extract,setProvider,getProvider};
 
-// production-app.js still references #accountEmail from an older layout.
-// Keep a hidden compatibility target so rendering never crashes when the new layout only has #signedInAs.
 if(!document.getElementById('accountEmail')){
-  const compat=document.createElement('span');
-  compat.id='accountEmail';
-  compat.hidden=true;
-  document.body.appendChild(compat);
+  const compat=document.createElement('span');compat.id='accountEmail';compat.hidden=true;document.body.appendChild(compat);
 }
 
 function addScript(src){if(document.querySelector(`script[data-dd-src="${src}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;s.dataset.ddSrc=src;document.head.appendChild(s);}
 function addStyle(href){if(document.querySelector(`link[data-dd-href="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.ddHref=href;document.head.appendChild(l);}
-addStyle('final-runtime.css?v=2');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');
+addStyle('final-runtime.css?v=2');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');addScript('community-chat.js?v=1');
 })();
