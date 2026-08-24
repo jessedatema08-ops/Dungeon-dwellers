@@ -1,29 +1,37 @@
-name: Unpack full beta
+name: Install Dungeon Dwellers beta v4
 on:
   push:
     branches: [main]
     paths:
-      - 'dungeon-dwellers-full-beta.zip'
+      - '.beta-parts/**'
       - '.github/workflows/unpack-beta.yml'
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  unpack:
+  install:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unpack beta into repository root
+      - name: Rebuild beta archive and replace app
         run: |
-          unzip -o dungeon-dwellers-full-beta.zip -d .
-          rm -f dungeon-dwellers-full-beta.zip
-      - name: Commit unpacked PWA
+          test -f .beta-parts/part00
+          test -f .beta-parts/part01
+          test -f .beta-parts/part02
+          test -f .beta-parts/part03
+          test -f .beta-parts/part04
+          test -f .beta-parts/part05
+          cat .beta-parts/part* | base64 -d > /tmp/dungeon-dwellers-beta-v4.zip
+          unzip -t /tmp/dungeon-dwellers-beta-v4.zip
+          unzip -o /tmp/dungeon-dwellers-beta-v4.zip -d .
+          rm -f dungeon-dwellers-full-beta.zip dungeon-dwellers-beta-v4.zip
+          cp /tmp/dungeon-dwellers-beta-v4.zip dungeon-dwellers-beta-v4.zip
+          rm -rf .beta-parts
+      - name: Commit replacement beta
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m 'Unpack Dungeon Dwellers full beta PWA'
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Replace Dungeon Dwellers with beta v4'
           git push
