@@ -10,8 +10,9 @@ Run these files in Supabase SQL Editor in this order. Existing installs can skip
 2. `supabase-final-migration.sql`
 3. `supabase-final-fix.sql`
 4. `supabase-final-v2.sql`
+5. `supabase-final-v3.sql`
 
-The v2 migration tightens invite membership, hides NPC private state from players, adds scene-turn submissions, notification outbox, private map views, and server-only visibility helpers.
+The v2 migration tightens invite membership, hides NPC private state from players, adds scene-turn submissions, notification outbox, private map views, and server-only visibility helpers. The v3 migration initializes 24-hour asynchronous Scene Turn deadlines for campaigns outside combat.
 
 ## 2. Deploy Edge Functions
 
@@ -28,6 +29,7 @@ Set function secrets in Supabase. Never place the service role or VAPID private 
 ```bash
 supabase secrets set DUNGEON_AI_WORKER_URL=https://dungeon-dwellers-ai.jesse-datema08.workers.dev
 supabase secrets set TURN_CRON_SECRET=CHOOSE_A_LONG_RANDOM_SECRET
+supabase secrets set NOTIFIER_CRON_SECRET=CHOOSE_ANOTHER_LONG_RANDOM_SECRET
 supabase secrets set VAPID_PUBLIC_KEY=YOUR_PUBLIC_VAPID_KEY
 supabase secrets set VAPID_PRIVATE_KEY=YOUR_PRIVATE_VAPID_KEY
 supabase secrets set VAPID_SUBJECT=mailto:YOUR_EMAIL
@@ -47,9 +49,9 @@ The private VAPID key belongs only in Supabase function secrets.
 
 ## 4. Scheduled processors
 
-Schedule `dungeon-turns` at least every 1–5 minutes and `dungeon-notifier` at least every 1–5 minutes. A Supabase Cron/pg_cron job, external scheduler, or trusted automation can POST to the functions. Send `x-cron-secret` to `dungeon-turns` if `TURN_CRON_SECRET` is configured.
+Schedule `dungeon-turns` at least every 1–5 minutes and `dungeon-notifier` at least every 1–5 minutes. A Supabase Cron/pg_cron job, external scheduler, or trusted automation can POST to the functions. Send `x-cron-secret` using the corresponding cron secret.
 
-`dungeon-turns` enforces expired 6-hour player blocks, records missed turns as doing nothing meaningful, resolves enemy blocks through the AI worker, advances the four-block sequence, and queues halfway/one-hour/open/expired/round notifications.
+`dungeon-turns` resolves asynchronous Scene Turns when everyone submits or the scene deadline expires. During combat it enforces expired 6-hour player blocks, records missed turns as doing nothing meaningful, resolves enemy blocks through the AI worker, advances the four-block sequence, and queues halfway/one-hour/open/expired/round notifications.
 
 `dungeon-notifier` reads each player’s notification preferences and quiet hours, then sends Web Push through saved device subscriptions.
 
