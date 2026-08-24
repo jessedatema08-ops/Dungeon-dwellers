@@ -52,11 +52,11 @@
     </div>
 
     <div class="homeQuickGrid">
-      <button class="quickNavCard" data-nav="character"><span class="quickIcon character"></span><span>Character</span></button>
-      <button class="quickNavCard" data-nav="inventory"><span class="quickIcon inventory"></span><span>Inventory</span></button>
-      <button class="quickNavCard" data-nav="journal"><span class="quickIcon journal"></span><span>Journal</span></button>
-      <button class="quickNavCard" data-nav="world"><span class="quickIcon map"></span><span>Map</span></button>
-      <button class="quickNavCard" data-nav="journal"><span class="quickIcon quest"></span><span>Quests</span></button>
+      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'character\']').click()"><span class="quickIcon character"></span><span>Character</span></button>
+      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'inventory\']').click()"><span class="quickIcon inventory"></span><span>Inventory</span></button>
+      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'journal\']').click()"><span class="quickIcon journal"></span><span>Journal</span></button>
+      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'world\']').click()"><span class="quickIcon map"></span><span>Map</span></button>
+      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'journal\']').click()"><span class="quickIcon quest"></span><span>Quests</span></button>
     </div>
 
     <div class="homeInfoGrid">
@@ -90,7 +90,7 @@
         <span class="pendingDot" aria-hidden="true"></span>
         <div class="eyebrow">Pending</div>
         <div class="pendingLabel"><span class="pendingIcon"></span><div><strong>DM Reaction</strong><p style="margin:6px 0 0">The AI DM has a reaction to your last action.</p></div></div>
-        <div class="pendingLink">View Reaction</div>
+        <button class="pendingLink" type="button" data-action="reaction-demo">View Reaction</button>
         <div class="small" style="margin-top:12px">Mode <strong id="modeText">Exploration Scene</strong> · Window <strong id="turnWindowMirror">6h 00m</strong></div>
       </div>
     </div>
