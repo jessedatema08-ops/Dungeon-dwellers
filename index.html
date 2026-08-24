@@ -1,164 +1,144 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#08090c"><meta name="description" content="Dungeon Dwellers full interactive beta">
-<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="final-theme.css"><link rel="stylesheet" href="dice-rolls.css"><link rel="stylesheet" href="black-gold-home.css?v=14"><link rel="stylesheet" href="home-final-v2.css?v=1">
-<title>Dungeon Dwellers Beta v4</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07090c">
+<meta name="description" content="Dungeon Dwellers asynchronous D&D 5e 2024 campaign app">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="production.css?v=1">
+<title>Dungeon Dwellers</title>
 </head>
 <body>
-<div id="app" class="app">
+<div id="authGate" class="authGate hidden"></div>
+<div id="lobby" class="lobby hidden"></div>
+<div id="modalRoot" class="hidden"></div>
+<div id="toast" class="toast"></div>
+
+<div class="appShell">
 <header class="topbar">
-  <button class="topIconButton menuGhost" type="button" aria-label="Open menu"><span></span><span></span><span></span></button>
-  <div class="brandBlock">
-    <div class="brand">Dungeon<br>Dwellers</div>
-    <div class="statusPill"><span class="dot"></span><span id="campaignStatus">AI DM active</span></div>
-    <div class="subtitle">The Ashen Vault · Chapter 4</div>
+  <button id="topMenu" class="iconBtn" aria-label="Campaigns"><svg viewBox="0 0 48 48"><path d="M10 14h28M10 24h28M10 34h28"/></svg></button>
+  <div class="brand">
+    <h1><span>Dungeon</span><span>Dwellers</span></h1>
+    <div class="brandMeta"><i class="onlineDot"></i><span id="aiStatus">AI DM online</span></div>
+    <div class="campaignStrip"><span id="campaignName">Campaign</span> · <span id="chapterLabel">Chapter 1</span></div>
+    <div id="turnTimer" class="timerPill">Scene Turn</div>
   </div>
-  <div class="topbarRight">
-    <div class="turnTimer" aria-label="Time remaining in current turn"><span class="timerLabel">Turn</span><strong id="turnTimerText">6h 00m</strong></div>
-    <button class="topIconButton gearGhost" type="button" aria-label="Open settings"><span class="gearCore"></span></button>
-  </div>
+  <button id="topSettings" class="iconBtn" aria-label="Settings"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="7"/><path d="M24 6v6m0 24v6M6 24h6m24 0h6M11.3 11.3l4.2 4.2m17 17 4.2 4.2m0-25.4-4.2 4.2m-17 17-4.2 4.2"/></svg></button>
 </header>
 
-<main>
-<section class="page active" id="scenePage">
-  <div class="homeFrame">
-    <div class="card sceneHero" id="sceneCard">
-      <div class="eyebrow">Current Scene</div>
-      <h1 class="sceneHeading">The Broken Gate</h1>
-      <div class="heroSceneGrid">
-        <div class="sceneNarrative">
-          <p id="sceneText">You have been inside the Ashen Vault for almost two hours. Neris, the courier you rescued earlier, has led you beneath the ruined watch chapel. A bronze door to the north bears an inscription you cannot read. A collapsed shrine blocks the west wall. Something shifted in the dark beyond it a moment ago.</p>
-        </div>
-        <div class="sceneIllustration" aria-hidden="true">
-          <div class="sceneIllustrationGlow"></div>
-        </div>
-      </div>
-      <div class="aiComposer sleek">
-        <div class="composerLabel">Ask the AI DM anything</div>
-        <div class="prompt"><input id="customInput" placeholder="Ask the AI DM anything..."><button data-action="send-custom" class="primary">Send</button></div>
-      </div>
-      <div class="notice" id="sceneNotice">The chamber is quiet except for water dripping behind the north wall.</div>
-    </div>
-
-    <button class="continueTurnButton" data-action="custom"><span class="ctaIcon"></span><span class="ctaText">Continue Turn</span><span class="ctaArrow"></span></button>
-
-    <div class="sceneActionRail">
-      <button data-action="inspect">Inspect Shrine</button>
-      <button data-action="attack">Attack</button>
-      <button data-action="move">Move</button>
-      <button data-action="reaction-demo">Reaction Test</button>
-    </div>
-
-    <div class="homeQuickGrid">
-      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'character\']').click()"><span class="quickIcon character"></span><span>Character</span></button>
-      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'inventory\']').click()"><span class="quickIcon inventory"></span><span>Inventory</span></button>
-      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'journal\']').click()"><span class="quickIcon journal"></span><span>Journal</span></button>
-      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'world\']').click()"><span class="quickIcon map"></span><span>Map</span></button>
-      <button class="quickNavCard" type="button" onclick="document.querySelector('.nav [data-nav=\'journal\']').click()"><span class="quickIcon quest"></span><span>Quests</span></button>
-    </div>
-
-    <div class="homeInfoGrid">
-      <div class="card dashboardCard">
-        <div class="eyebrow">Current Character</div>
-        <div class="characterCardBody">
-          <div class="portraitOrb"></div>
-          <div>
-            <div class="statPrimary">Jesse</div>
-            <div class="small">Level 5 Champion Fighter</div>
-            <div class="row"><strong id="hpText">38 / 50 HP</strong></div>
-            <div class="meter"><span id="hpBar" style="width:76%"></span></div>
-            <div class="smallStatRow">
-              <div class="smallStat"><i></i><span>AC 18</span></div>
-              <div class="smallStat"><i></i><span id="conditionText">None</span></div>
-              <div class="smallStat"><i></i><span id="reactionText">Available</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card dashboardCard">
-        <div class="eyebrow">Active Quest</div>
-        <div class="statPrimary" style="font-size:22px;line-height:1.2">The Blue Light Below</div>
-        <p>Find what is pulsing beneath the ruined watch chapel and determine why the lower vault has reopened.</p>
-        <div class="questProgress">2 / 3 Objectives</div>
-        <div class="small" style="margin-top:10px">In-game time <strong id="gameTime">9:16 PM</strong></div>
-      </div>
-
-      <div class="card dashboardCard pendingCard">
-        <span class="pendingDot" aria-hidden="true"></span>
-        <div class="eyebrow">Pending</div>
-        <div class="pendingLabel"><span class="pendingIcon"></span><div><strong>DM Reaction</strong><p style="margin:6px 0 0">The AI DM has a reaction to your last action.</p></div></div>
-        <button class="pendingLink" type="button" onclick="document.querySelector('[data-action=\'reaction-demo\']').click()">View Reaction</button>
-        <div class="small" style="margin-top:12px">Mode <strong id="modeText">Exploration Scene</strong> · Window <strong id="turnWindowMirror">6h 00m</strong></div>
-      </div>
-    </div>
-
-    <div class="lowerGrid">
-      <div class="card mapModule">
-        <div class="eyebrow">Battle Map</div>
-        <div class="battlemap"><div class="grid"></div><div class="room r1"></div><div class="room r2"></div><div class="room r3"></div><div class="wall w1"></div><div class="wall w2"></div><div class="wall w3"></div><div class="wall w4"></div><div class="door"></div><div class="altar"></div><div class="rubble"></div><div class="blueglow"></div><div class="token player" id="playerToken">JD<span>Jesse · Fighter</span></div><div class="token enemy" id="enemyToken">?<span>Unknown Creature</span></div><div class="token npc">N<span>Neris</span></div><div class="fog"></div></div>
-      </div>
-
-      <div class="card dashboardCard">
-        <div class="eyebrow">Campaign Activity</div>
-        <div id="timeline" class="timeline"><div><strong>18 minutes ago in-game</strong>You spared Neris after learning she had been smuggling medicine.</div><div><strong>Quest updated</strong>Find the source of the blue light beneath the watch chapel.</div><div><strong>Private knowledge</strong>Neris trusts you enough to admit the Vault was opened once before, twenty years ago.</div></div>
-      </div>
-    </div>
-
-    <div class="card dashboardCard">
-      <div class="eyebrow">Feature Actions</div>
-      <div class="featureButtons"><button data-feature="secondWind">Second Wind <b id="swCount">3/3</b></button><button data-feature="actionSurge">Action Surge <b id="asCount">1/1</b></button><button data-feature="tacticalMind">Tactical Mind</button></div>
-    </div>
-
-    <div class="card dashboardCard">
-      <div class="eyebrow">Campaign Owner</div>
-      <div class="ownerTools"><button data-owner="pause">Pause</button><button data-owner="rewind">Rewind</button><button data-owner="correct">Correct State</button><button data-owner="combat">Start Combat Demo</button></div>
-      <div class="notice" id="ownerNotice">Owner tools stay separate from your player actions.</div>
-    </div>
+<main class="main">
+<section id="homePage" class="page active">
+  <article class="card sceneCard">
+    <div class="eyebrow">Current Scene</div>
+    <h2 id="sceneTitle" class="sceneTitle">Current Scene</h2>
+    <p id="sceneText" class="sceneText">Loading campaign...</p>
+    <div class="sceneArt" aria-hidden="true"></div>
+    <div class="composer"><input id="aiInput" autocomplete="off" placeholder="Ask the AI DM anything..."><button id="aiSend" class="sendBtn" aria-label="Send">›</button></div>
+    <div id="sceneNotice" class="sceneNotice">Ask anything about the game.</div>
+  </article>
+  <button id="continueTurn" class="continueBtn">Continue Turn</button>
+  <div class="actionRow">
+    <button data-intent="Inspect the current scene carefully.">Inspect</button>
+    <button data-intent="attack">Attack</button>
+    <button data-intent="Move to a new position in the current scene.">Move</button>
+    <button data-intent="Interact with the most relevant object in the current scene.">Interact</button>
   </div>
+
+  <div class="quickGrid">
+    <button class="quick" data-page="character"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="7"/><path d="M11 41c1-11 6-17 13-17s12 6 13 17"/></svg><span>Character</span></button>
+    <button class="quick" data-page="inventory"><svg viewBox="0 0 48 48"><rect x="8" y="14" width="32" height="27" rx="5"/><path d="M16 14V9h16v5M16 23v10m16-10v10"/></svg><span>Inventory</span></button>
+    <button class="quick" data-page="journal"><svg viewBox="0 0 48 48"><path d="M9 7h29v34H9zM15 15h17m-17 8h17m-17 8h12"/></svg><span>Journal</span></button>
+    <button class="quick" data-page="map"><svg viewBox="0 0 48 48"><path d="m6 11 11-5 14 5 11-5v31l-11 5-14-5-11 5Zm11-5v31m14-26v31"/></svg><span>Map</span></button>
+    <button class="quick" data-page="journal"><svg viewBox="0 0 48 48"><path d="M12 6h24v36H12zM18 15h12m-12 8h12m-12 8h8"/></svg><span>Quests</span></button>
+  </div>
+
+  <div class="dashboard">
+    <article class="card miniCard"><div class="eyebrow">Current Character</div><h3 id="homeCharacterName">Adventurer</h3><p id="homeCharacterMeta">Character loading</p><strong id="homeHp">0 / 0 HP</strong><div class="meter"><i id="homeHpBar" style="width:0"></i></div></article>
+    <article class="card miniCard"><div class="eyebrow">Active Quest</div><h3 id="homeQuestTitle">No active quest</h3><p id="homeQuestText">Discovered quests appear here.</p></article>
+    <article class="card miniCard"><div class="eyebrow">Pending</div><h3>DM Reaction</h3><p id="pendingText">No reaction waiting.</p></article>
+  </div>
+
+  <article class="card sectionCard">
+    <div class="sectionHead"><div><div class="eyebrow">Initiative</div><h2>Initiative Blocks</h2></div><div class="buttonRow"><button id="rollInitiativeBtn" class="ghostBtn hidden">Roll Initiative</button><button id="submitTurnBtn" class="goldBtn">Submit Turn</button></div></div>
+    <div id="initiativeBlocks" class="initiativeBlocks"></div>
+  </article>
+
+  <article class="card sectionCard">
+    <div class="eyebrow">Reactions</div>
+    <div id="reactionList" class="list"></div>
+  </article>
+
+  <article class="card sectionCard">
+    <div class="eyebrow">Battle Map</div>
+    <div id="mapFrame" class="mapFrame"></div>
+  </article>
 </section>
 
-<section class="page" id="characterPage"><div class="layout"><div class="card"><div class="eyebrow">Character Sheet · 2024 Rules</div><div class="featureGrid">
-<div><strong>Ability Scores</strong><span>STR 18 (+4) · DEX 14 (+2) · CON 16 (+3) · INT 10 · WIS 12 (+1) · CHA 10</span></div>
-<div><strong>Fighter 5</strong><span>PB +3 · Extra Attack · Tactical Shift · Action Surge · Tactical Mind · Second Wind 3 uses · Weapon Mastery 4</span></div>
-<div><strong>Champion 3+</strong><span>Improved Critical (19–20) · Remarkable Athlete (Advantage on Initiative and Athletics checks)</span></div>
-<div><strong>Languages</strong><span>Common · Dwarvish. Unknown inscriptions remain untranslated until legitimately understood.</span></div>
-<div><strong>Spellcasting</strong><span>This character has no spells. No cantrips, prepared spells, spell slots, or innate spellcasting are available.</span></div>
-<div><strong>Character Verification</strong><span>The AI DM is expected to verify class features, resources, equipment, and legal actions against this character profile.</span></div>
-</div><div class="eyebrow spaced">Feature Actions</div><div class="actions"><button data-feature="secondWind">Second Wind</button><button data-feature="actionSurge">Action Surge</button><button data-feature="tacticalMind">Tactical Mind</button><button data-action="initiative-roll">Roll Initiative</button></div></div>
-<aside><div class="card"><div class="eyebrow">Rules Tests</div><div class="actions compact"><button data-test="save">Saving Throw</button><button data-test="hidden">Hidden Check</button><button data-test="passive">Passive Perception</button><button data-test="group">Group Check</button><button data-test="concentration">Concentration Save</button><button data-test="death">Death Save</button></div></div><div class="card"><div class="eyebrow">Controlled Units</div><p>No companions, familiars, summons, or mounts are active.</p></div></aside></div></section>
+<section id="characterPage" class="page">
+  <article class="card sectionCard">
+    <div class="sectionHead"><div><div class="eyebrow">Character Sheet</div><h2>2024 Rules Character</h2></div><div class="buttonRow"><button id="characterEditBtn" class="goldBtn">Create / Edit</button><label class="ghostBtn" for="characterPdf">Import PDF</label><input id="characterPdf" type="file" accept="application/pdf" hidden></div></div>
+    <div id="characterContent"></div>
+  </article>
+</section>
 
-<section class="page" id="journalPage"><div class="layout"><div class="card"><div class="eyebrow">Quest Log</div><div class="list"><div><strong>The Blue Light Below</strong><span>Active · Find what is pulsing beneath the ruined watch chapel.</span></div><div><strong>Neris's Debt</strong><span>Optional · Decide whether to help Neris clear her brother's name.</span></div><div><strong>Old Smuggler Route</strong><span>Completed · You found a safe entrance into the Ashen Vault.</span></div></div><div class="eyebrow spaced">Previously On</div><p>Three days ago you were hired to find a missing courier. The trail led to a ruined watch chapel where you found Neris wounded and hiding from grave robbers. After helping her survive an ambush, you learned the chapel sits over the Ashen Vault, a sealed complex tied to a forgotten military order.</p><div class="eyebrow spaced">AI Scene History</div><div class="list"><div><strong>Entering the Lower Vault</strong><span>You and Neris descended beneath the chapel and found the bronze gate chamber.</span></div><div><strong>Recovering the Courier</strong><span>Neris was rescued from the chapel ruins and agreed to guide you below.</span></div></div></div><aside><div class="card"><div class="eyebrow">NPC Relationships</div><div class="list"><div><strong>Neris</strong><span>Trust high · Fear low · Owes you a favor.</span></div><div><strong>Quartermaster Pell</strong><span>Suspicious · Thinks you are hiding information about the Vault.</span></div></div></div><div class="card"><div class="eyebrow">Public Knowledge</div><div class="list"><div><strong>Known Fact</strong><span>The Ashen Vault was opened once before, around twenty years ago.</span></div><div><strong>Known Fact</strong><span>The bronze door bears an inscription the party cannot currently read.</span></div></div></div><div class="card"><div class="eyebrow">Private Discoveries</div><p>Knowledge found alone remains private until you choose to share it.</p></div></aside></div></section>
+<section id="inventoryPage" class="page">
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Inventory</div><h2>Equipment & Items</h2></div></div><div id="inventoryContent"></div></article>
+</section>
 
-<section class="page" id="inventoryPage"><div class="layout"><div class="card"><div class="eyebrow">Inventory</div><div class="list clickable"><button data-item="claymore"><strong>Claymore</strong><span>Rules profile: Greatsword · 2d6 Slashing · Heavy · Two-Handed · Graze · 6 lb</span></button><button data-item="potion"><strong>Healing Potion ×3</strong><span>Consumable · opens details before use.</span></button><button data-item="shield"><strong>Shield</strong><span>6 lb · carried, not usable while making a two-handed Greatsword attack.</span></button><button data-item="pack"><strong>Explorer's Pack</strong><span>Rope, torches, food, tools, and supplies.</span></button></div><div class="row"><span>Carried weight</span><strong>61 / 270 lb</strong></div></div><aside><div class="card"><div class="eyebrow">Weapon Mastery</div><p>Greatsword mastery is active: <b>Graze</b>. On a miss, deal Slashing damage equal to the ability modifier used for the attack (+4), if the target is eligible.</p></div><div class="card"><div class="eyebrow">Magic Items</div><div id="relicStatus" class="notice">No identified magic items.</div><button class="wide" data-action="relic">Take Current Relic</button></div></aside></div></section>
+<section id="journalPage" class="page">
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Journal</div><h2>Quests, Knowledge & History</h2></div></div><div id="journalContent"></div></article>
+</section>
 
-<section class="page" id="worldPage"><div class="layout"><div><div class="card"><div class="eyebrow">Travel</div><div class="row"><span>Destination</span><strong>Blackmere</strong></div><div class="row"><span>Distance</span><strong>14 miles</strong></div><button class="wide" data-world="travel">Plan Travel</button></div><div class="card"><div class="eyebrow">Merchant</div><p>Quartermaster Pell's prices respond to scarcity and relationship.</p><button class="wide" data-world="merchant">Open Shop</button></div></div><aside><div class="card"><div class="eyebrow">Rests</div><div class="actions"><button data-world="short-rest">Short Rest</button><button data-world="long-rest">Long Rest</button></div></div><div class="card"><div class="eyebrow">Downtime & Crafting</div><div class="actions"><button data-world="downtime">Downtime</button><button data-world="craft">Crafting</button></div></div></aside></div></section>
+<section id="mapPage" class="page">
+  <article class="card sectionCard">
+    <div class="sectionHead"><div><div class="eyebrow">Tactical Map</div><h2 id="mapName">Campaign Map</h2></div><div id="mapOwnerControls" class="buttonRow ownerOnly"><label class="ghostBtn" for="mapUpload">Upload Map</label><input id="mapUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden><button id="mapGenerate" class="goldBtn">Generate Map</button></div></div>
+    <div id="mapFrameMapPage" class="mapFrame"></div>
+    <p class="statusLine">Each player receives a player-safe view. Hidden tokens stay hidden unless Supabase visibility state reveals them to that player. The uploaded or generated map is only the background; fog and tokens remain live overlays.</p>
+  </article>
+</section>
 
-<section class="page" id="systemsPage"><div class="card"><div class="eyebrow">Beta Systems</div><div class="featureGrid">
-<div><strong>Initiative Styles</strong><span>Initiative Blocks, Rolling Initiative Windows, or 24-Hour Planned Rounds.</span></div><div><strong>Reactions</strong><span>Valid trigger → notification → one-hour window → legal reactions plus Custom Reaction → forfeited if missed.</span></div><div><strong>Fog & Vision</strong><span>Player-specific fog, walls, doors, light, darkvision, blindsight, truesight, invisibility, and magical darkness.</span></div><div><strong>AI DM</strong><span>Custom Turn and rules questions now connect to the deployed Cloudflare AI Worker. Full production state validation and multiplayer persistence remain backend work.</span></div><div><strong>Rules Engine</strong><span>2024 combat structure, conditions, rests, resources, weapon mastery, saves, criticals, death, concentration, and effects.</span></div><div><strong>World Systems</strong><span>Travel, merchants, crafting, downtime, quests, relationships, companions, mounts, party splitting, and private discoveries.</span></div><div><strong>Owner Controls</strong><span>Pause, rewind, correct state, and recovery tools without granting DM authority during normal play.</span></div><div><strong>Persistence</strong><span>Beta state is stored locally. Production multiplayer state belongs in Supabase with an immutable event log.</span></div>
-</div><div class="actions spaced"><button data-system="initiative">Initiative Style</button><button data-system="notification">Test Notification</button><button data-system="split">Split Party Preview</button><button data-system="import">Character PDF Import</button><button data-system="reset">Reset Beta</button></div><div class="notice" id="systemNotice">Visible local beta controls are wired. Live AI is connected through Cloudflare; authentication, realtime multiplayer, uploaded-PDF parsing, and true remote Web Push still require the production backend.</div><input type="file" id="pdfInput" accept="application/pdf" hidden></div></section>
+<section id="campaignPage" class="page">
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Campaign</div><h2>Party & Turn Structure</h2></div><button id="newCampaignBtn" class="ownerOnly ghostBtn">New Campaign</button></div><div id="campaignContent"></div></article>
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Combat</div><h2>Initiative Blocks</h2></div><div class="buttonRow"><button id="startCombatBtn" class="ownerOnly goldBtn">Start Combat</button><button id="advanceBlockBtn" class="ownerOnly ghostBtn">Advance Block</button></div></div><div id="initiativeBlocksCampaign" class="initiativeBlocks"></div><p class="statusLine">Order: first ceil-half of initiative-sorted players → first ceil-half of initiative-sorted enemies → remaining players → remaining enemies. Player blocks are 6 hours. Enemy blocks are AI-resolved. A combat round is 6 seconds in-world.</p></article>
+</section>
+
+<section id="npcPage" class="page">
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">NPCs</div><h2>Known Characters</h2></div></div><div id="npcContent"></div></article>
+</section>
+
+<section id="morePage" class="page">
+  <article class="card sectionCard"><div class="eyebrow">Account</div><h2>Settings</h2><p>Signed in as <strong id="signedInAs"></strong></p><div class="buttonRow"><button id="notificationSettingsBtn" class="ghostBtn">Notification Settings</button><button id="enableNotificationsBtn" class="goldBtn">Enable Notifications</button><button id="signOutBtn" class="ghostBtn">Sign Out</button></div><p class="statusLine">Delivery mode: <strong id="notificationMode">immediate</strong>. Each player controls their own notification preferences.</p></article>
+
+  <article class="card sectionCard"><div class="eyebrow">Free Dice Roller</div><h2>Any Dice, Any Quantity</h2><p>Use the center d20 button at any time for expressions such as 1d20, 2d6+4, 8d6, 1d4+1d8+5, or advantage/disadvantage.</p><button id="freeDiceBtnInline" class="goldBtn" onclick="document.getElementById('freeDiceBtn').click()">Open Dice Roller</button></article>
+
+  <article id="ownerPanel" class="card sectionCard ownerOnly hidden"><div class="eyebrow">Campaign Owner</div><h2>Admin & Recovery</h2><p>These controls exist for system ownership and recovery. During play, the owner remains a normal player and the AI DM remains the DM.</p><div class="buttonRow"><button id="inviteBtn" class="goldBtn">Invite Player</button><button id="pauseBtn" class="ghostBtn">Pause / Resume</button><button id="rewindBtn" class="ghostBtn">Rewind</button><button id="correctBtn" class="dangerBtn">Correct State</button><button id="newCampaignBtnDuplicate" class="ghostBtn" onclick="document.getElementById('newCampaignBtn').click()">Create Another Campaign</button></div></article>
+
+  <article class="card sectionCard"><div class="eyebrow">Rules & Systems</div><div class="list"><div class="listItem"><strong>D&D 5e 2024 Revised</strong><span>Character data is authoritative. The AI verifies actions, equipment, spells, resources, conditions, targeting, and legal mechanics before resolution.</span></div><div class="listItem"><strong>Player-Owned Rolls</strong><span>Players enact attacks, damage, saves, checks, initiative, death saves, concentration, healing, rerolls, and other player-facing dice through the app.</span></div><div class="listItem"><strong>Reactions</strong><span>Valid triggers open a 1-hour player reaction window. The AI never chooses a reaction for a player.</span></div><div class="listItem"><strong>Scene Turns</strong><span>Outside combat, asynchronous scene actions are gathered and resolved by the AI DM while questions about known information remain free.</span></div><div class="listItem"><strong>Private Information</strong><span>Player-specific map visibility, knowledge, hidden enemies, traps, secret doors, and split-party information are scoped through Supabase access rules and visibility records.</span></div></div></article>
+</section>
 </main>
 
-<nav class="nav" aria-label="Main sections">
-  <button data-nav="scene" class="active"><span>Home</span></button>
-  <button data-nav="world"><span>Campaign</span></button>
-  <button data-nav="character"><span>Character</span></button>
-  <button data-nav="inventory"><span>Inventory</span></button>
-  <button data-nav="journal"><span>Quests</span></button>
-  <button data-nav="systems"><span>More</span></button>
+<nav class="bottomNav" aria-label="Main navigation">
+  <button data-page="home" class="active"><svg viewBox="0 0 48 48"><path d="M6 21 24 6l18 15v20H30V28H18v13H6Z"/></svg><span>Home</span></button>
+  <button data-page="campaign"><svg viewBox="0 0 48 48"><path d="M7 8h14c5 0 8 3 8 8v25c0-5-3-8-8-8H7Zm34 0H27c-5 0-8 3-8 8v25c0-5 3-8 8-8h14Z"/></svg><span>Campaign</span></button>
+  <button id="freeDiceBtn" class="centerRoll" aria-label="Free dice roller"><svg viewBox="0 0 48 48"><path d="m24 4 17 11v19L24 44 7 34V15Z"/><path d="m24 4 6 11-6 10-6-10Zm17 11H30l5 10 6 9M7 15h11l-5 10-6 9m6-9h22L24 44Zm5-10H8m22 0h10"/></svg></button>
+  <button data-page="npc"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="8"/><path d="M10 41c1-10 6-16 14-16s13 6 14 16M6 36c1-6 4-10 9-12m27 12c-1-6-4-10-9-12"/></svg><span>NPCs</span></button>
+  <button data-page="more"><svg viewBox="0 0 48 48"><circle cx="10" cy="24" r="2.5"/><circle cx="24" cy="24" r="2.5"/><circle cx="38" cy="24" r="2.5"/></svg><span>More</span></button>
 </nav>
 </div>
 
-<div class="overlay" id="modal"><div class="modal"><div class="eyebrow" id="modalKicker">Details</div><h2 id="modalTitle"></h2><div id="modalBody"></div><div id="modalChoices" class="choices"></div><div class="modalActions"><button id="modalBack">Cancel</button><button id="modalPrimary" class="primary">Use</button></div></div></div>
-<div class="overlay" id="rollModal"><div class="modal rollmodal"><div class="eyebrow" id="rollKicker">Roll</div><h2 id="rollTitle">Ready</h2><div class="dieStage" id="dieStage"><div class="flash"></div><div class="die"><svg viewBox="0 0 120 120"><polygon points="60,5 111,38 92,105 28,105 9,38"/><path d="M60 5L60 105M9 38H111M28 105L60 38L92 105M9 38L60 105L111 38"/><text id="dieNum" x="60" y="59">—</text></svg></div><div class="rollResult"><span id="rollLabel">Ready</span><strong id="rollResult">—</strong></div></div><div id="rollMath" class="rollMath"></div><button id="rollButton" class="wide primary">Roll</button><button id="rollClose" class="wide secondary">Cancel</button></div></div>
-<div id="ripple" class="ripple"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
+<script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));</script>
+<script src="config.js?v=1"></script>
+<script src="supabase-client.js?v=2"></script>
+<script src="dice-engine.js?v=1"></script>
+<script src="ai-provider.js?v=1"></script>
+<script src="production-app.js?v=1"></script>
 <script>
-(()=>{const key='ddTurnDeadline';let end=Number(localStorage.getItem(key));if(!end||end<=Date.now()){end=Date.now()+6*60*60*1000;localStorage.setItem(key,String(end));}const top=document.getElementById('turnTimerText'),mirror=document.getElementById('turnWindowMirror');function draw(){const left=Math.max(0,end-Date.now());const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);const text=left>0?`${h}h ${String(m).padStart(2,'0')}m`:'Expired';if(top)top.textContent=text;if(mirror)mirror.textContent=text;const timer=top?.closest('.turnTimer');if(timer){timer.classList.toggle('urgent',left>0&&left<=60*60*1000);timer.classList.toggle('expired',left===0);}if(left===0)clearInterval(id);}draw();const id=setInterval(draw,1000);})();
+// PDF.js ESM fallback loader for browsers where the module does not expose a global.
+if(!window.pdfjsLib){import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs').then(m=>{window.pdfjsLib=m;m.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';}).catch(()=>{});}
 </script>
-<script src="app.js?v=14"></script>
-<script src="ui-enhancements.js?v=14"></script>
-<script src="dice-roll-enhancer.js?v=14"></script>
-<script src="ai-client.js?v=14"></script>
-</body></html>
+</body>
+</html>
