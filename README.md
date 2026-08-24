@@ -1,22 +1,20 @@
-# Dungeon Dwellers — Full Beta
+# Dungeon Dwellers — Beta v4
 
-A near-final-feel PWA beta for the asynchronous AI-DM D&D campaign interface.
+Interactive GitHub Pages beta for the asynchronous AI-DM D&D interface.
 
-## Included in this beta
-- Started solo campaign: The Ashen Vault, Chapter 4
-- Scene turns and Custom Turn
-- Action details → target selection → confirm/use → player-triggered roll → damage/result flow
-- Claymore attack flow with 2d6 + Strength damage calculation
-- Class feature detail/confirmation flows for Second Wind, Action Surge, and Indomitable
-- Inventory, loot identification, rests, travel, merchant, crafting, downtime
-- Quest log, NPC relationships, private discoveries
-- Campaign Owner pause, rewind, state correction, initiative mode preview
-- Reaction-window preview and notification test
-- Fog/vision battle-map presentation
-- Offline PWA caching and local persistence
+## Rules corrections in this build
+The included solo character is a level 5 Champion Fighter using the 2024 rules. The beta now reflects the level-5 Fighter feature table: Second Wind has 3 uses; Action Surge has 1 use; Extra Attack allows two attacks with the Attack action; Tactical Shift is available after Second Wind; Tactical Mind uses Second Wind after a failed ability check; Indomitable is **not** present because it begins at Fighter 9. The Claymore is mechanically treated as a Greatsword: 2d6 Slashing, Heavy, Two-Handed, Graze, 6 lb.
 
-## Production backend still required
-The static beta represents the product flows locally. Live AI DM calls, Supabase authentication/database/realtime sync, true remote Web Push, multi-user permissions, uploaded character PDFs, and server-side campaign event history require the production backend.
+## Working local beta flows
+- Scene actions, Custom Turn confirmation, map/fog presentation
+- Inventory → item details → Use → target selection → Swing → player-triggered attack roll → damage roll → second attack from Extra Attack → scene-impact return
+- Second Wind, Tactical Shift, Action Surge, Tactical Mind
+- Champion initiative Advantage and 19–20 critical threshold
+- Saving throws, hidden checks, passive checks, group checks, concentration, death saves
+- Reaction-window preview and Opportunity Attack path
+- Travel, merchant, rests, crafting, downtime, quests, NPC relationships
+- Campaign Owner pause, rewind, state correction, and combat transition
+- Local persistence, offline PWA caching, local notification test
 
-## GitHub Pages
-A Pages deployment workflow is included in `.github/workflows/pages.yml`.
+## Production-only services
+Static GitHub Pages cannot provide live AI DM inference, Supabase authentication/realtime multiplayer, true server push, secure permissions, durable shared event history, or full D&D Beyond PDF parsing. The beta labels these honestly instead of faking them.
