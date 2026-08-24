@@ -1,6 +1,6 @@
-const CACHE='dungeon-dwellers-beta-v4-ai14';
+const CACHE='dungeon-dwellers-beta-v4-ai15';
 const ASSETS=['./','./index.html','./styles.css','./final-theme.css','./black-gold-home.css','./home-final-v2.css','./dice-rolls.css','./app.js','./ui-enhancements.js','./dice-roll-enhancer.js','./ai-client.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>caches.match(e.request,{ignoreSearch:true}))) });
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>caches.match(e.request,{ignoreSearch:true})))});
 self.addEventListener('notificationclick',e=>{e.notification.close();const target=e.notification?.data?.url||'./';e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(ws=>{const w=ws[0];if(w){w.navigate?.(target);return w.focus()}return clients.openWindow(target)}))});
