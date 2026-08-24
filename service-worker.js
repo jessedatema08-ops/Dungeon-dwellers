@@ -1,12 +1,7 @@
-const CACHE='dungeon-dwellers-production-v1';
-const ASSETS=['./','./index.html','./production.css','./production-app.js','./supabase-client.js','./dice-engine.js','./ai-provider.js','./config.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='dungeon-dwellers-production-v2';
+const ASSETS=['./','./index.html','./production.css','./production-app.js','./supabase-client.js','./dice-engine.js','./rules-engine.js','./ai-provider.js','./config.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));});
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.origin!==self.location.origin)return;event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response;}).catch(()=>caches.match(event.request,{ignoreSearch:true})));});
-self.addEventListener('push',event=>{
-  let data={};try{data=event.data?.json()||{};}catch{data={body:event.data?.text()||'Dungeon Dwellers update'};}
-  const title=data.title||'Dungeon Dwellers';
-  const options={body:data.body||'Your campaign has an update.',icon:'icon-192.png',badge:'icon-192.png',tag:data.tag||'dd-update',renotify:true,data:{url:data.url||'./'}};
-  event.waitUntil(self.registration.showNotification(title,options));
-});
+self.addEventListener('push',event=>{let data={};try{data=event.data?.json()||{};}catch{data={body:event.data?.text()||'Dungeon Dwellers update'};}const title=data.title||'Dungeon Dwellers';const options={body:data.body||'Your campaign has an update.',icon:'icon-192.png',badge:'icon-192.png',tag:data.tag||'dd-update',renotify:true,data:{url:data.url||'./'}};event.waitUntil(self.registration.showNotification(title,options));});
 self.addEventListener('notificationclick',event=>{event.notification.close();const target=event.notification?.data?.url||'./';event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(windows=>{const w=windows[0];if(w){w.navigate?.(target);return w.focus();}return clients.openWindow(target);}));});
