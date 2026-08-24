@@ -1,5 +1,5 @@
-const CACHE='dungeon-dwellers-beta-v4-ai16';
-const ASSETS=['./','./index.html','./styles.css','./final-theme.css','./black-gold-home.css','./home-final-v2.css','./dice-rolls.css','./app.js','./ui-enhancements.js','./dice-roll-enhancer.js','./ai-client.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='dungeon-dwellers-beta-v4-ai17';
+const ASSETS=['./','./index.html','./styles.css','./final-theme.css','./black-gold-home.css','./home-final-v2.css','./dice-rolls.css','./app.js','./ui-enhancements.js','./supabase-auth.js','./dice-roll-enhancer.js','./ai-client.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request,{cache:'no-store'}).catch(()=>caches.match(e.request,{ignoreSearch:true})))});
