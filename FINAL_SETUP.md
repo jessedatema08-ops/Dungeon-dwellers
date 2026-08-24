@@ -11,8 +11,9 @@ Run these files in Supabase SQL Editor in this order. Existing installs can skip
 3. `supabase-final-fix.sql`
 4. `supabase-final-v2.sql`
 5. `supabase-final-v3.sql`
+6. `supabase-final-v4.sql`
 
-The v2 migration tightens invite membership, hides NPC private state from players, adds scene-turn submissions, notification outbox, private map views, and server-only visibility helpers. The v3 migration initializes 24-hour asynchronous Scene Turn deadlines for campaigns outside combat.
+The v2 migration tightens invite membership, hides NPC private state from players, adds scene-turn submissions, notification outbox, private map views, and server-only visibility helpers. The v3 migration initializes 24-hour asynchronous Scene Turn deadlines for campaigns outside combat. The v4 migration completes server notification triggers for party mentions and campaign pause/resume.
 
 ## 2. Deploy Edge Functions
 
