@@ -9,7 +9,7 @@ async function session(){return (await q(client.auth.getSession())).session;}
 async function user(){return (await session())?.user||null;}
 const DB={
  client,session,user,onAuth:cb=>client.auth.onAuthStateChange((_e,s)=>cb(s)),
- signUp:(email,password)=>q(client.auth.signUp({email,password})),signIn:(email,password)=>q(client.auth.signInWithPassword({email,password})),
+ signUp:(email,password)=>q(client.auth.signUp({email,password,options:{emailRedirectTo:location.href}})),signIn:(email,password)=>q(client.auth.signInWithPassword({email,password})),
  async signOut(){const {error}=await client.auth.signOut();if(error)throw error;},
  myCampaigns:()=>q(client.from('campaign_members').select('campaign_id,role,joined_at,campaigns(*)').order('joined_at')),
  async createCampaign(name='The Ashen Vault'){const u=await user();if(!u)throw new Error('Sign in first.');const c=await q(client.from('campaigns').insert({owner_id:u.id,name,chapter:1,settings:{combatTurnHours:6,reactionWindowHours:1,sceneTurnHours:24,initiativeStyle:'initiative_blocks'}}).select().single());await q(client.from('campaign_members').insert({campaign_id:c.id,user_id:u.id,role:'owner'}));await q(client.from('notification_preferences').upsert({campaign_id:c.id,user_id:u.id},{onConflict:'campaign_id,user_id'}));return c;},
@@ -39,7 +39,7 @@ const DB={
  async savePushSubscription(sub){const u=await user(),j=sub.toJSON();return q(client.from('push_subscriptions').upsert({user_id:u.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,user_agent:navigator.userAgent,last_seen_at:new Date().toISOString()},{onConflict:'endpoint'}).select().single());},
  chat:(id,limit=80)=>q(client.from('chat_messages').select('*').eq('campaign_id',id).order('created_at',{ascending:true}).limit(limit)),
  async sendChat(campaign_id,body,mentions=[]){const u=await user();return q(client.from('chat_messages').insert({campaign_id,user_id:u.id,body,mentions}).select().single());},
- subscribe(campaign_id,onChange){const ch=client.channel(`dd:${campaign_id}:${crypto.randomUUID()}`);ch.on('postgres_changes',{event:'*',schema:'public',table:'campaigns',filter:`id=eq.${campaign_id}`},p=>onChange('campaigns',p));['campaign_members','characters','tokens','campaign_maps','initiative_entries','turn_submissions','reaction_windows','story_events','knowledge','quests','chat_messages'].forEach(table=>ch.on('postgres_changes',{event:'*',schema:'public',table,filter:`campaign_id=eq.${campaign_id}`},p=>onChange(table,p)));return ch.subscribe();},
+ subscribe(campaign_id,onChange){const ch=client.channel(`dd:${campaign_id}:${crypto.randomUUID()}`);ch.on('postgres_changes',{event:'*',schema:'public',table:'campaigns',filter:`id=eq.${campaign_id}`},p=>onChange('campaigns',p));['campaign_members','characters','tokens','campaign_maps','initiative_entries','turn_submissions','scene_submissions','reaction_windows','story_events','knowledge','quests','chat_messages'].forEach(table=>ch.on('postgres_changes',{event:'*',schema:'public',table,filter:`campaign_id=eq.${campaign_id}`},p=>onChange(table,p)));return ch.subscribe();},
  unsubscribe(ch){if(ch)client.removeChannel(ch);}
 };
 window.ddSupabase=client;window.DungeonDB=DB;window.dispatchEvent(new CustomEvent('dd:db-ready'));
