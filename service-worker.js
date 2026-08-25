@@ -1,4 +1,4 @@
-const CACHE='dungeon-dwellers-final-v19-20260825';
+const CACHE='dungeon-dwellers-final-v20-20260825';
 const ASSETS=['./','./index.html','./production.css','./final-runtime.css','./config.js','./supabase-client.js','./dice-engine.js','./rules-engine.js','./ai-provider.js','./map-engine.js','./map-ai-integration.js','./production-app.js','./navigation-layout.js','./community-chat.js','./character-system.js','./character-importer.js','./final-runtime.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
