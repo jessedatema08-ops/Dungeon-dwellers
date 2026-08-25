@@ -1,6 +1,11 @@
 (()=>{
 'use strict';
 if(window.__DD_REALTIME_PERF)return;window.__DD_REALTIME_PERF=true;
+const rawSetItem=Storage.prototype.setItem;
+Storage.prototype.setItem=function(key,value){
+  rawSetItem.call(this,key,value);
+  if(this===localStorage&&key==='ddPreferredCampaign')window.dispatchEvent(new CustomEvent('dd:campaign-changed',{detail:{campaignId:String(value||'')}}));
+};
 const install=()=>{
   const DB=window.DungeonDB;
   if(!DB?.client)return false;
