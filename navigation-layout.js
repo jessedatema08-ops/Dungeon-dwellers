@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__DD_NAV_LAYOUT_V2)return;window.__DD_NAV_LAYOUT_V2=true;
+if(window.__DD_NAV_LAYOUT_V3)return;window.__DD_NAV_LAYOUT_V3=true;
 const $=(s,r=document)=>r.querySelector(s);
 
 const characterIcon='<svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="7"/><path d="M11 41c1-11 6-17 13-17s12 6 13 17"/></svg>';
@@ -24,7 +24,7 @@ function apply(){
   }
 
   const pdfLabel=document.querySelector('label[for="characterPdf"]');
-  if(pdfLabel&&pdfLabel.textContent!=='Replace from PDF')pdfLabel.textContent='Replace from PDF';
+  if(pdfLabel&&pdfLabel.textContent!=='Import PDF')pdfLabel.textContent='Import PDF';
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
