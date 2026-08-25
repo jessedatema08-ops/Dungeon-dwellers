@@ -48,7 +48,7 @@
   <article class="card sectionCard">
     <div class="sectionHead"><div><div class="eyebrow">Maps</div><h2 id="mapName">Tactical Map</h2></div><div id="mapOwnerControls" class="buttonRow ownerOnly"><label class="ghostBtn" for="mapUpload">Optional Upload</label><input id="mapUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden><button id="mapGenerate" class="goldBtn">Generate Location</button></div></div>
     <div id="mapFrameMapPage" class="mapFrame"></div>
-    <p class="statusLine">Tactical maps are rendered from compact location data with a 5-foot grid, live tokens, player-safe fog, and a North compass. Switch to World to see discovered locations and routes. Uploaded images remain optional.</p>
+    <p class="statusLine">Tactical maps are rendered from compact location data with a 5-foot grid, live tokens, terrain, and a North compass. Switch to World to see discovered locations and routes. Uploaded images remain optional.</p>
   </article>
 </section>
 <section id="campaignPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Campaign</div><h2>Party & Turn Structure</h2></div><button id="newCampaignBtn" class="ownerOnly ghostBtn">New Campaign</button></div><div id="campaignContent"></div></article><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Combat</div><h2>Initiative Blocks</h2></div><div class="buttonRow"><button id="startCombatBtn" class="ownerOnly goldBtn">Start Combat</button><button id="advanceBlockBtn" class="ownerOnly ghostBtn">Advance Block</button></div></div><div id="initiativeBlocksCampaign" class="initiativeBlocks"></div><p class="statusLine">Order: first ceil-half of initiative-sorted players → first ceil-half of initiative-sorted enemies → remaining players → remaining enemies. Player blocks are 6 hours. Enemy blocks are AI-resolved. A combat round is 6 seconds in-world.</p></article></section>
@@ -68,7 +68,7 @@
 <script src="supabase-client.js?v=2"></script>
 <script src="dice-engine.js?v=1"></script>
 <script src="ai-provider.js?v=1"></script>
-<script src="map-engine.js?v=1"></script>
+<script src="map-engine.js?v=3"></script>
 <script src="map-ai-integration.js?v=1"></script>
 <script src="production-app.js?v=2"></script>
 <script src="navigation-layout.js?v=3"></script>
