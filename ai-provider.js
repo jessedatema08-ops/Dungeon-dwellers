@@ -12,11 +12,35 @@ async function ask(message,campaignState,opts={}){if(provider.type==='supabase-e
 function extract(narration){const re=/\[\[DD_EVENT:(\{.*?\})\]\]/s,m=re.exec(narration||'');let event=null;if(m){try{event=JSON.parse(m[1]);}catch{}}return {text:String(narration||'').replace(m?.[0]||'','').trim(),event};}
 window.DungeonAI={ask,extract,setProvider,getProvider};
 
+const WEAPON_PROFILES={
+  'dagger':{damage:'1d4 piercing',range:'Melee / 20/60 ft.',properties:'Finesse · Light · Thrown'},
+  'quarterstaff':{damage:'1d6 bludgeoning',range:'Melee',properties:'Versatile (1d8)'},
+  'shortbow':{damage:'1d6 piercing',range:'80/320 ft.',properties:'Ammunition · Two-Handed'},
+  'unarmed strike':{damage:'1 + STR bludgeoning',range:'5 ft.',properties:'Unarmed'}
+};
+const WEAPON_NAMES=new Set(['battleaxe','blowgun','club','dagger','dart','flail','glaive','greataxe','greatclub','greatsword','halberd','hand crossbow','handaxe','heavy crossbow','javelin','lance','light crossbow','light hammer','longbow','longsword','mace','maul','morningstar','pike','quarterstaff','rapier','scimitar','shortbow','shortsword','sickle','sling','spear','trident','war pick','warhammer','whip','unarmed strike']);
+const invNorm=s=>String(s??'').trim().toLowerCase().replace(/\s+/g,' ');
+function pdfFields(profile){if(profile?.sourceData?.pdfFields)return profile.sourceData.pdfFields;const sec=(profile?.importedSections||[]).find(s=>s?.name==='All PDF fields'&&s?.data);return sec?.data||{};}
+function normalizeProfile(profile){if(!profile||typeof profile!=='object')return profile;profile.equipment=profile.equipment||{};const eq=profile.equipment,fields=pdfFields(profile),map=new Map();
+  function add(item,category='gear',fromPdf=false){if(!item?.name)return;const key=invNorm(item.name);if(!key)return;const cur=map.get(key)||{name:String(item.name).trim(),quantity:0,category};const q=Number(item.quantity??item.qty);if(Number.isFinite(q)&&q>0){if(fromPdf)cur.quantity+=q;else cur.quantity=Math.max(cur.quantity,q)}else if(!cur.quantity)cur.quantity=1;for(const k of ['weight','damage','range','properties','effect','notes','rulesProfile','attackBonus','damageType'])if(item[k]!=null&&item[k]!==''&&!cur[k])cur[k]=item[k];if(category==='weapon'||item.type==='weapon'||WEAPON_NAMES.has(key))cur.category='weapon';else if(cur.category!=='weapon')cur.category=category;map.set(key,cur)}
+  for(const item of (eq.weapons||[]))add(item,'weapon');for(const item of (eq.armor||[]))add(item,'armor');for(const item of (eq.consumables||[]))add(item,'consumable');for(const item of (eq.gear||[]))add(item,'gear');for(const item of (profile.magicItems||eq.magicItems||[]))add(item,'magic');
+  for(let i=0;i<60;i++){const name=fields[`Eq Name${i}`];if(!name)continue;add({name,quantity:Number(fields[`Eq Qty${i}`]||1),weight:fields[`Eq Weight${i}`]||''},WEAPON_NAMES.has(invNorm(name))?'weapon':'gear',true)}
+  const attackName=fields['Wpn Name']||fields['Wpn Name 1'];if(attackName)add({name:attackName,damage:fields['Wpn1 Damage']||'',attackBonus:fields['Wpn1 AtkBonus']||''},'weapon');
+  for(const item of map.values()){if(item.category==='weapon'){const spec=WEAPON_PROFILES[invNorm(item.name)]||{};item.damage=item.damage||spec.damage||'';item.range=item.range||spec.range||'';item.properties=item.properties||spec.properties||item.rulesProfile||'';item.type='weapon'}}
+  const all=[...map.values()];eq.weapons=all.filter(i=>i.category==='weapon');eq.armor=all.filter(i=>i.category==='armor');eq.consumables=all.filter(i=>i.category==='consumable');eq.gear=all.filter(i=>!['weapon','armor','consumable','magic'].includes(i.category));eq.magicItems=all.filter(i=>i.category==='magic');profile.magicItems=eq.magicItems;
+  return profile;
+}
+function inventoryItems(profile){normalizeProfile(profile);const eq=profile?.equipment||{};return [...(eq.weapons||[]),...(eq.armor||[]),...(eq.consumables||[]),...(eq.magicItems||[]),...(eq.gear||[])];}
+window.DungeonInventoryRuntime={normalizeProfile,inventoryItems,weaponProfiles:WEAPON_PROFILES,isWeapon:name=>WEAPON_NAMES.has(invNorm(name))};
+
+const runtimeDb=window.DungeonDB;
+if(runtimeDb&&!runtimeDb.__inventoryRuntimePatched){runtimeDb.__inventoryRuntimePatched=true;const originalCharacter=runtimeDb.character.bind(runtimeDb),originalStory=runtimeDb.story.bind(runtimeDb);runtimeDb.character=async(...args)=>{const row=await originalCharacter(...args);if(row?.profile)normalizeProfile(row.profile);return row};runtimeDb.story=(id,limit=50)=>originalStory(id,Math.min(Number(limit)||50,50));}
+
 if(!document.getElementById('accountEmail')){
   const compat=document.createElement('span');compat.id='accountEmail';compat.hidden=true;document.body.appendChild(compat);
 }
 
 function addScript(src){if(document.querySelector(`script[data-dd-src="${src}"]`))return;const s=document.createElement('script');s.src=src;s.defer=true;s.dataset.ddSrc=src;document.head.appendChild(s);}
 function addStyle(href){if(document.querySelector(`link[data-dd-href="${href}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.dataset.ddHref=href;document.head.appendChild(l);}
-addStyle('final-runtime.css?v=4');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');addScript('community-chat.js?v=2');addScript('character-import.js?v=1');addScript('navigation-layout.js?v=1');
+addStyle('final-runtime.css?v=4');addScript('rules-engine.js?v=2');addScript('final-runtime.js?v=2');addScript('campaign-delete.js?v=1');addScript('campaign-generation.js?v=1');addScript('schedule-display-fix.js?v=1');addScript('community-chat.js?v=2');addScript('navigation-layout.js?v=1');addScript('inventory-system.js?v=1');
 })();
