@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07090c">
-<meta name="description" content="Dungeon Dwellers asynchronous D&D 5e 2024 campaign app">
+<meta name="description" content="Dungeon Dwellers V2 asynchronous D&D 5e 2024 campaign app">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="production.css?v=1">
-<title>Dungeon Dwellers</title>
+<link rel="stylesheet" href="production.css?v=2">
+<title>Dungeon Dwellers V2</title>
 </head>
 <body>
 <div id="authGate" class="authGate hidden"></div>
@@ -30,37 +30,31 @@
   </article>
   <span id="sceneTitle" hidden></span><span id="sceneText" hidden></span><span id="sceneNotice" hidden></span>
   <div class="quickGrid">
-    <button class="quick" data-page="character"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="7"/><path d="M11 41c1-11 6-17 13-17s12 6 13 17"/></svg><span>Character</span></button>
-    <button class="quick" data-page="inventory"><svg viewBox="0 0 48 48"><rect x="8" y="14" width="32" height="27" rx="5"/><path d="M16 14V9h16v5M16 23v10m16-10v10"/></svg><span>Inventory</span></button>
-    <button class="quick" data-page="journal"><svg viewBox="0 0 48 48"><path d="M9 7h29v34H9zM15 15h17m-17 8h17m-17 8h12"/></svg><span>Journal</span></button>
-    <button class="quick" data-page="map"><svg viewBox="0 0 48 48"><path d="m6 11 11-5 14 5 11-5v31l-11 5-14-5-11 5Zm11-5v31m14-26v31"/></svg><span>Map</span></button>
-    <button class="quick" data-page="journal"><svg viewBox="0 0 48 48"><path d="M12 6h24v36H12zM18 15h12m-12 8h12m-12 8h8"/></svg><span>Quests</span></button>
+    <button class="quick" data-page="character"><span>Character</span></button>
+    <button class="quick" data-page="inventory"><span>Inventory</span></button>
+    <button class="quick" data-page="journal"><span>Journal</span></button>
+    <button class="quick" data-page="map"><span>Map</span></button>
+    <button class="quick" data-page="journal"><span>Quests</span></button>
   </div>
   <div class="dashboard"><article class="card miniCard"><div class="eyebrow">Current Character</div><h3 id="homeCharacterName">Adventurer</h3><p id="homeCharacterMeta">Character loading</p><strong id="homeHp">0 / 0 HP</strong><div class="meter"><i id="homeHpBar" style="width:0"></i></div></article><article class="card miniCard"><div class="eyebrow">Active Quest</div><h3 id="homeQuestTitle">No active quest</h3><p id="homeQuestText">Discovered quests appear here.</p></article><article class="card miniCard"><div class="eyebrow">Pending</div><h3>DM Reaction</h3><p id="pendingText">No reaction waiting.</p></article></div>
-  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Initiative</div><h2>Initiative Blocks</h2></div><div class="buttonRow"><button id="submitTurnBtn" class="goldBtn">Submit Turn</button></div></div><div id="initiativeBlocks" class="initiativeBlocks"></div></article>
+  <article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Initiative</div><h2>Initiative Blocks</h2></div></div><div id="initiativeBlocks" class="initiativeBlocks"></div></article>
   <article class="card sectionCard"><div class="eyebrow">Reactions</div><div id="reactionList" class="list"></div></article>
   <article class="card sectionCard"><div class="eyebrow">Battle Map</div><div id="mapFrame" class="mapFrame"></div></article>
 </section>
 <section id="characterPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Character Sheet</div><h2>2024 Rules Character</h2></div><div class="buttonRow"><button id="characterEditBtn" class="goldBtn">Create / Edit</button><label class="ghostBtn" for="characterPdf">Import PDF</label><input id="characterPdf" type="file" accept="application/pdf" hidden></div></div><div id="characterContent"></div></article></section>
 <section id="inventoryPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Inventory</div><h2>Equipment & Items</h2></div></div><div id="inventoryContent"></div></article></section>
 <section id="journalPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Journal</div><h2>Quests, Knowledge & History</h2></div></div><div id="journalContent"></div></article></section>
-<section id="mapPage" class="page">
-  <article class="card sectionCard">
-    <div class="sectionHead"><div><div class="eyebrow">Maps</div><h2 id="mapName">Tactical Map</h2></div><div id="mapOwnerControls" class="buttonRow ownerOnly"><label class="ghostBtn" for="mapUpload">Optional Upload</label><input id="mapUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden></div></div>
-    <div id="mapFrameMapPage" class="mapFrame"></div>
-    <p class="statusLine">Tactical maps are rendered from compact location data with a 5-foot grid, live tokens, terrain, and a North compass. Tap tokens for relevant actions; drag your own token to move. Switch to World to see discovered locations and routes. Uploaded images remain optional.</p>
-  </article>
-</section>
-<section id="campaignPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Campaign</div><h2>Party & Turn Structure</h2></div><button id="newCampaignBtn" class="ownerOnly ghostBtn">New Campaign</button></div><div id="campaignContent"></div></article><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Combat</div><h2>Initiative Blocks</h2></div><div class="buttonRow"><button id="startCombatBtn" class="ownerOnly goldBtn">Start Combat</button><button id="advanceBlockBtn" class="ownerOnly ghostBtn">Advance Block</button></div></div><div id="initiativeBlocksCampaign" class="initiativeBlocks"></div><p class="statusLine">Order: first ceil-half of initiative-sorted players → first ceil-half of initiative-sorted enemies → remaining players → remaining enemies. Player blocks are 6 hours. Enemy blocks are AI-resolved. A combat round is 6 seconds in-world.</p></article></section>
+<section id="mapPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Maps</div><h2 id="mapName">Tactical Map</h2></div><div id="mapOwnerControls" class="buttonRow ownerOnly"><label class="ghostBtn" for="mapUpload">Optional Upload</label><input id="mapUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden></div></div><div id="mapFrameMapPage" class="mapFrame"></div><p class="statusLine">Tactical maps are rendered from compact location data with a 5-foot grid, interactive tokens, terrain, pathfinding, line of sight, cover, areas, and a North compass. Switch to World to see discovered locations and routes. Maps are created and changed automatically by the AI DM.</p></article></section>
+<section id="campaignPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Campaign</div><h2>Party & Turn Structure</h2></div><button id="newCampaignBtn" class="ownerOnly ghostBtn">New Campaign</button></div><div id="campaignContent"></div></article><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">Combat</div><h2>Initiative Blocks</h2></div></div><div id="initiativeBlocksCampaign" class="initiativeBlocks"></div><p class="statusLine">The AI DM starts combat when needed. Players roll initiative only when prompted, take actions through their V2 character controls, and explicitly end their turns. Enemy blocks resolve automatically.</p></article></section>
 <section id="npcPage" class="page"><article class="card sectionCard"><div class="sectionHead"><div><div class="eyebrow">NPCs</div><h2>Known Characters</h2></div></div><div id="npcContent"></div></article></section>
 <section id="morePage" class="page">
   <article class="card sectionCard"><div class="eyebrow">Account</div><h2>Settings</h2><p>Signed in as <strong id="signedInAs"></strong></p><div class="buttonRow"><button id="notificationSettingsBtn" class="ghostBtn">Notification Settings</button><button id="enableNotificationsBtn" class="goldBtn">Enable Notifications</button><button id="signOutBtn" class="ghostBtn">Sign Out</button></div><p class="statusLine">Delivery mode: <strong id="notificationMode">immediate</strong>. Each player controls their own notification preferences.</p></article>
-  <article class="card sectionCard"><div class="eyebrow">Free Dice Roller</div><h2>Any Dice, Any Quantity</h2><p>Use the center d20 button at any time for expressions such as 1d20, 2d6+4, 8d6, 1d4+1d8+5, or advantage/disadvantage.</p><button id="freeDiceBtnInline" class="goldBtn" onclick="document.getElementById('freeDiceBtn').click()">Open Dice Roller</button></article>
-  <article id="ownerPanel" class="card sectionCard ownerOnly hidden"><div class="eyebrow">Campaign Owner</div><h2>Admin & Recovery</h2><p>These controls exist for system ownership and recovery. During play, the owner remains a normal player and the AI DM remains the DM.</p><div class="buttonRow"><button id="inviteBtn" class="goldBtn">Invite Player</button><button id="pauseBtn" class="ghostBtn">Pause / Resume</button><button id="rewindBtn" class="ghostBtn">Rewind</button><button id="correctBtn" class="dangerBtn">Correct State</button><button id="newCampaignBtnDuplicate" class="ghostBtn">Create Another Campaign</button></div></article>
-  <article class="card sectionCard"><div class="eyebrow">Rules & Systems</div><div class="list"><div class="listItem"><strong>D&D 5e 2024 Revised</strong><span>Character data is authoritative. The AI verifies actions, equipment, spells, resources, conditions, targeting, and legal mechanics before resolution.</span></div><div class="listItem"><strong>Player-Owned Rolls</strong><span>Players enact attacks, damage, saves, checks, initiative, death saves, concentration, healing, rerolls, and other player-facing dice through the app.</span></div><div class="listItem"><strong>Reactions</strong><span>Valid triggers open a 1-hour player reaction window. The AI never chooses a reaction for a player.</span></div><div class="listItem"><strong>Scene Turns</strong><span>Outside combat, asynchronous scene actions are gathered and resolved by the AI DM while questions about known information remain free.</span></div><div class="listItem"><strong>Private Information</strong><span>Player-specific map visibility, knowledge, hidden enemies, traps, secret doors, and split-party information are scoped through Supabase access rules and visibility records.</span></div></div></article>
+  <article class="card sectionCard"><div class="eyebrow">Free Dice Roller</div><h2>Any Dice, Any Quantity</h2><p>The free roller is always available for table use. AI-requested gameplay rolls use a separate verified roll flow.</p><button id="freeDiceBtnInline" class="goldBtn" onclick="document.getElementById('freeDiceBtn').click()">Open Dice Roller</button></article>
+  <article id="ownerPanel" class="card sectionCard ownerOnly hidden"><div class="eyebrow">Campaign Owner</div><h2>Admin & Recovery</h2><p>These controls are for ownership, backup, and recovery. During play, the owner remains a normal player and the AI DM remains the DM.</p><div class="buttonRow"><button id="inviteBtn" class="goldBtn">Invite Player</button><button id="pauseBtn" class="ghostBtn">Pause / Resume</button><button id="rewindBtn" class="ghostBtn">Rewind</button><button id="correctBtn" class="dangerBtn">Correct State</button><button id="newCampaignBtnDuplicate" class="ghostBtn">Create Another Campaign</button></div></article>
+  <article class="card sectionCard"><div class="eyebrow">Rules & Systems</div><div class="list"><div class="listItem"><strong>D&D 5e 2024 Revised</strong><span>Structured character mechanics are resolved authoritatively before the AI narrates outcomes.</span></div><div class="listItem"><strong>Player-Owned Rolls</strong><span>Player-facing attacks, damage, saves, checks, initiative, death saves, healing, and other required dice are rolled through explicit app prompts.</span></div><div class="listItem"><strong>Reactions</strong><span>Legal reaction windows are shown to the affected player; the AI never chooses a player reaction.</span></div><div class="listItem"><strong>Persistent Campaign Memory</strong><span>Important NPC relationships, clues, factions, locations, promises, and consequences are kept in compact campaign memory.</span></div><div class="listItem"><strong>Campaign Safety</strong><span>Owners can export and restore complete V2 campaign backups.</span></div></div></article>
 </section>
 </main>
-<nav class="bottomNav" aria-label="Main navigation"><button data-page="home" class="active"><svg viewBox="0 0 48 48"><path d="M6 21 24 6l18 15v20H30V28H18v13H6Z"/></svg><span>Home</span></button><button data-page="campaign"><svg viewBox="0 0 48 48"><path d="M7 8h14c5 0 8 3 8 8v25c0-5-3-8-8-8H7Zm34 0H27c-5 0-8 3-8 8v25c0-5 3-8 8-8h14Z"/></svg><span>Campaign</span></button><button id="freeDiceBtn" class="centerRoll" aria-label="Free dice roller"><svg viewBox="0 0 48 48"><path d="m24 4 17 11v19L24 44 7 34V15Z"/><path d="m24 4 6 11-6 10-6-10Zm17 11H30l5 10 6 9M7 15h11l-5 10-6 9m6-9h22L24 44Zm5-10H8m22 0h10"/></svg></button><button data-page="npc"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="8"/><path d="M10 41c1-10 6-16 14-16s13 6 14 16M6 36c1-6 4-10 9-12m27 12c-1-6-4-10-9-12"/></svg><span>NPCs</span></button><button data-page="more"><svg viewBox="0 0 48 48"><circle cx="10" cy="24" r="2.5"/><circle cx="24" cy="24" r="2.5"/><circle cx="38" cy="24" r="2.5"/></svg><span>More</span></button></nav>
+<nav class="bottomNav" aria-label="Main navigation"><button data-page="home" class="active"><span>Home</span></button><button data-page="campaign"><span>Campaign</span></button><button id="freeDiceBtn" class="centerRoll" aria-label="Free dice roller"><span>d20</span></button><button data-page="npc"><span>NPCs</span></button><button data-page="more"><span>More</span></button></nav>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));</script>
@@ -68,11 +62,18 @@
 <script src="supabase-client.js?v=2"></script>
 <script src="dice-engine.js?v=1"></script>
 <script src="ai-provider.js?v=1"></script>
-<script src="map-engine.js?v=3"></script>
-<script src="interaction-ui.js?v=3"></script>
+<script src="v2-provider.js?v=1"></script>
+<script src="v2-rules.js?v=2"></script>
+<script src="map-engine.js?v=4"></script>
 <script src="map-ai-integration.js?v=2"></script>
 <script src="campaign-manager.js?v=1"></script>
 <script src="production-app.js?v=2"></script>
+<script src="v2-runtime.js?v=1"></script>
+<script src="interaction-ui.js?v=4"></script>
+<script src="v2-initiative.js?v=1"></script>
+<script src="v2-combat.js?v=1"></script>
+<script src="v2-backup.js?v=1"></script>
+<script src="v2-character-ui.js?v=1"></script>
 <script src="navigation-layout.js?v=10"></script>
 <script src="community-chat.js?v=7"></script>
 <script src="character-system.js?v=8"></script>
