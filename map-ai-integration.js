@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-if(window.__DD_MAP_AI_INTEGRATION_V1)return;window.__DD_MAP_AI_INTEGRATION_V1=true;
+if(window.__DD_MAP_AI_INTEGRATION_V2)return;window.__DD_MAP_AI_INTEGRATION_V2=true;
 const ai=window.DungeonAI;if(!ai?.ask)return;
 const originalAsk=ai.ask.bind(ai);
 const MAP_WORDS=/\b(enter|entered|arrive|arrived|leave|left|move|moved|door|gate|room|hall|corridor|stairs|stairway|bridge|road|street|path|trail|wall|cave|dungeon|building|tower|temple|forest|river|lake|portal|teleport|north|south|east|west|open|opened|close|closed|lock|locked|unlock|fire|fog|smoke|terrain)\b/i;
