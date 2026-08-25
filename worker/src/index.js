@@ -85,6 +85,10 @@ Rules and authority:
 Return only the structured response requested by the schema.`;
 }
 
+function characterImportPrompt() {
+  return `You are a lossless character-sheet extraction engine for Dungeon Dwellers. The user message contains detailed instructions, the required JSON shape, and extracted PDF text. Follow that requested shape exactly. Parse only facts present in the supplied PDF text. Never invent missing character facts from generic D&D knowledge. Preserve printed wording, numbers, spell/item/feature details, and miscellaneous information. Put hard-to-classify material into the requested importedSections or unclassified fields. Return only one valid JSON object with no markdown fence and no commentary.`;
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -115,17 +119,33 @@ export default {
     const message = typeof body?.message === 'string' ? body.message.trim() : '';
     const campaignState = body?.campaignState && typeof body.campaignState === 'object' ? body.campaignState : {};
     const context = body?.context && typeof body.context === 'object' ? body.context : {};
+    const characterImport = campaignState?.mode === 'character_import';
 
     if (!message) return json({ ok: false, error: 'message is required' }, 400, origin);
-    if (message.length > 8000) return json({ ok: false, error: 'message too long' }, 413, origin);
+    if (message.length > (characterImport ? 131000 : 8000)) return json({ ok: false, error: 'message too long' }, 413, origin);
 
     const stateText = JSON.stringify(campaignState);
     const contextText = JSON.stringify(context);
-    if (stateText.length + contextText.length > 50000) {
+    if (!characterImport && stateText.length + contextText.length > 50000) {
       return json({ ok: false, error: 'campaign payload too large' }, 413, origin);
     }
 
     try {
+      if (characterImport) {
+        const result = await env.AI.run(MODEL, {
+          messages: [
+            { role: 'system', content: characterImportPrompt() },
+            { role: 'user', content: message }
+          ],
+          temperature: 0.1,
+          max_tokens: 8192
+        });
+        const response = typeof result?.response === 'string'
+          ? result.response
+          : JSON.stringify(result?.response ?? result);
+        return json({ ok: true, response }, 200, origin);
+      }
+
       const result = await env.AI.run(MODEL, {
         messages: [
           { role: 'system', content: systemPrompt() },
