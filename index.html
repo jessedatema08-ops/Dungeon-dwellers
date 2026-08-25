@@ -30,21 +30,16 @@
 
 <main class="main">
 <section id="homePage" class="page active">
-  <article class="card sceneCard">
-    <div class="eyebrow">Current Scene</div>
-    <h2 id="sceneTitle" class="sceneTitle">Current Scene</h2>
-    <p id="sceneText" class="sceneText">Loading campaign...</p>
-    <div class="sceneArt" aria-hidden="true"></div>
-    <div class="composer"><input id="aiInput" autocomplete="off" placeholder="Ask the AI DM anything..."><button id="aiSend" class="sendBtn" aria-label="Send">›</button></div>
-    <div id="sceneNotice" class="sceneNotice">Ask anything about the game.</div>
+  <article id="partyChatHome" class="card communityChatCard">
+    <div class="chatTop"><div><div class="eyebrow">Campaign Community</div><h2>Party Chat</h2><p id="communitySubtitle">Shared party channel · AI DM scenes and resolutions appear here</p></div><div class="chatTabs"><button id="ccParty" class="active">Party</button><button id="ccPrivate">DMs</button></div></div>
+    <div id="communityPeers" class="dmPeers hidden"></div>
+    <div id="communityFeed" class="communityFeed"><div class="communityEmpty">Loading party chat...</div></div>
+    <div id="communityTyping" class="communityTyping hidden">AI Dungeon Master is responding...</div>
+    <div class="communityComposer"><textarea id="communityInput" class="field" maxlength="4000" placeholder="Message the party..."></textarea><button id="communitySend" class="sendBtn" aria-label="Send">›</button></div>
+    <div class="communityFoot"><span id="communityPrivacy">Everyone in the campaign can see this channel.</span><button id="communityAskDM">Ask AI DM here</button></div>
   </article>
-  <button id="continueTurn" class="continueBtn">Continue Turn</button>
-  <div class="actionRow">
-    <button data-intent="Inspect the current scene carefully.">Inspect</button>
-    <button data-intent="attack">Attack</button>
-    <button data-intent="Move to a new position in the current scene.">Move</button>
-    <button data-intent="Interact with the most relevant object in the current scene.">Interact</button>
-  </div>
+
+  <span id="sceneTitle" hidden></span><span id="sceneText" hidden></span><span id="sceneNotice" hidden></span>
 
   <div class="quickGrid">
     <button class="quick" data-page="character"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="7"/><path d="M11 41c1-11 6-17 13-17s12 6 13 17"/></svg><span>Character</span></button>
@@ -137,8 +132,8 @@
 <script src="ai-provider.js?v=1"></script>
 <script src="production-app.js?v=1"></script>
 <script src="navigation-layout.js?v=2"></script>
-<script src="community-chat.js?v=2"></script>
-<script src="character-system.js?v=3"></script>
+<script src="community-chat.js?v=4"></script>
+<script src="character-system.js?v=4"></script>
 <script>
 // PDF.js ESM fallback loader for browsers where the module does not expose a global.
 if(!window.pdfjsLib){import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs').then(m=>{window.pdfjsLib=m;m.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';}).catch(()=>{});}
