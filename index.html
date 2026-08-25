@@ -124,19 +124,15 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs" type="module"></script>
 <script>if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));</script>
 <script src="config.js?v=1"></script>
 <script src="supabase-client.js?v=2"></script>
 <script src="dice-engine.js?v=1"></script>
 <script src="ai-provider.js?v=1"></script>
 <script src="production-app.js?v=1"></script>
-<script src="navigation-layout.js?v=2"></script>
+<script src="navigation-layout.js?v=3"></script>
 <script src="community-chat.js?v=4"></script>
-<script src="character-system.js?v=4"></script>
-<script>
-// PDF.js ESM fallback loader for browsers where the module does not expose a global.
-if(!window.pdfjsLib){import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs').then(m=>{window.pdfjsLib=m;m.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';}).catch(()=>{});}
-</script>
+<script src="character-system.js?v=6"></script>
+<script src="character-importer.js?v=1"></script>
 </body>
 </html>

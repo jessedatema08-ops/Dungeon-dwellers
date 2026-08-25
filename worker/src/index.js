@@ -10,34 +10,21 @@ const RESPONSE_SCHEMA = {
   properties: {
     narration: { type: 'string' },
     consumes_scene_action: { type: 'boolean' },
-    action_required: {
-      type: 'string',
-      enum: ['none','attack_roll','damage_roll','ability_check','saving_throw','reaction','target_selection','movement','item_use','choice']
-    },
+    action_required: { type: 'string', enum: ['none','attack_roll','damage_roll','ability_check','saving_throw','reaction','target_selection','movement','item_use','choice'] },
     roll: {
       type: ['object','null'],
       properties: {
-        label: { type: 'string' },
-        ability: { type: ['string','null'] },
-        skill: { type: ['string','null'] },
-        dc_visible: { type: 'boolean' },
-        dc: { type: ['number','null'] },
-        advantage: { type: 'boolean' },
-        disadvantage: { type: 'boolean' },
-        reason: { type: ['string','null'] }
+        label: { type: 'string' }, ability: { type: ['string','null'] }, skill: { type: ['string','null'] },
+        dc_visible: { type: 'boolean' }, dc: { type: ['number','null'] }, advantage: { type: 'boolean' },
+        disadvantage: { type: 'boolean' }, reason: { type: ['string','null'] }
       },
       required: ['label','ability','skill','dc_visible','dc','advantage','disadvantage','reason']
     },
     target_options: { type: 'array', items: { type: 'string' } },
     state_effects: {
-      type: 'array',
-      items: {
+      type: 'array', items: {
         type: 'object',
-        properties: {
-          path: { type: 'string' },
-          operation: { type: 'string', enum: ['set','add','subtract','append','remove'] },
-          value: {}
-        },
+        properties: { path: { type: 'string' }, operation: { type: 'string', enum: ['set','add','subtract','append','remove'] }, value: {} },
         required: ['path','operation','value']
       }
     },
@@ -58,10 +45,7 @@ function corsHeaders(origin) {
 }
 
 function json(data, status, origin) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders(origin) }
-  });
+  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...corsHeaders(origin) } });
 }
 
 function systemPrompt() {
@@ -85,81 +69,36 @@ Rules and authority:
 Return only the structured response requested by the schema.`;
 }
 
-function characterImportPrompt() {
-  return `You are a lossless character-sheet extraction engine for Dungeon Dwellers. The user message contains detailed instructions, the required JSON shape, and extracted PDF text. Follow that requested shape exactly. Parse only facts present in the supplied PDF text. Never invent missing character facts from generic D&D knowledge. Preserve printed wording, numbers, spell/item/feature details, and miscellaneous information. Put hard-to-classify material into the requested importedSections or unclassified fields. Return only one valid JSON object with no markdown fence and no commentary.`;
-}
-
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
-
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders(origin) });
-    }
-
-    if (request.method === 'GET') {
-      return json({ ok: true, service: 'Dungeon Dwellers AI DM', model: MODEL }, 200, origin);
-    }
-
-    if (request.method !== 'POST') {
-      return json({ ok: false, error: 'Method not allowed' }, 405, origin);
-    }
-
-    if (origin && !ALLOWED_ORIGINS.has(origin)) {
-      return json({ ok: false, error: 'Origin not allowed' }, 403, origin);
-    }
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    if (request.method === 'GET') return json({ ok: true, service: 'Dungeon Dwellers AI DM', model: MODEL }, 200, origin);
+    if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405, origin);
+    if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ ok: false, error: 'Origin not allowed' }, 403, origin);
 
     let body;
-    try {
-      body = await request.json();
-    } catch {
-      return json({ ok: false, error: 'Invalid JSON body' }, 400, origin);
-    }
-
+    try { body = await request.json(); } catch { return json({ ok: false, error: 'Invalid JSON body' }, 400, origin); }
     const message = typeof body?.message === 'string' ? body.message.trim() : '';
     const campaignState = body?.campaignState && typeof body.campaignState === 'object' ? body.campaignState : {};
     const context = body?.context && typeof body.context === 'object' ? body.context : {};
-    const characterImport = campaignState?.mode === 'character_import';
-
     if (!message) return json({ ok: false, error: 'message is required' }, 400, origin);
-    if (message.length > (characterImport ? 131000 : 8000)) return json({ ok: false, error: 'message too long' }, 413, origin);
+    if (message.length > 8000) return json({ ok: false, error: 'message too long' }, 413, origin);
 
     const stateText = JSON.stringify(campaignState);
     const contextText = JSON.stringify(context);
-    if (!characterImport && stateText.length + contextText.length > 50000) {
-      return json({ ok: false, error: 'campaign payload too large' }, 413, origin);
-    }
+    if (stateText.length + contextText.length > 50000) return json({ ok: false, error: 'campaign payload too large' }, 413, origin);
 
     try {
-      if (characterImport) {
-        const result = await env.AI.run(MODEL, {
-          messages: [
-            { role: 'system', content: characterImportPrompt() },
-            { role: 'user', content: message }
-          ],
-          temperature: 0.1,
-          max_tokens: 8192
-        });
-        const response = typeof result?.response === 'string'
-          ? result.response
-          : JSON.stringify(result?.response ?? result);
-        return json({ ok: true, response }, 200, origin);
-      }
-
       const result = await env.AI.run(MODEL, {
         messages: [
           { role: 'system', content: systemPrompt() },
           { role: 'system', content: `Campaign state: ${stateText}\nRelevant context: ${contextText}` },
           { role: 'user', content: message }
         ],
-        response_format: {
-          type: 'json_schema',
-          schema: RESPONSE_SCHEMA
-        }
+        response_format: { type: 'json_schema', schema: RESPONSE_SCHEMA }
       });
-
-      const dm = result?.response ?? result;
-      return json({ ok: true, dm }, 200, origin);
+      return json({ ok: true, dm: result?.response ?? result }, 200, origin);
     } catch (error) {
       console.error('Workers AI error', error);
       return json({ ok: false, error: 'AI DM request failed', detail: String(error?.message || error) }, 502, origin);
