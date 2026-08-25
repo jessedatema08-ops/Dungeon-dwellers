@@ -9,16 +9,22 @@ const RESPONSE_SCHEMA = {
   type: 'object',
   properties: {
     narration: { type: 'string' },
+    response_visibility: { type: 'string', enum: ['party','private'] },
     consumes_scene_action: { type: 'boolean' },
     action_required: { type: 'string', enum: ['none','attack_roll','damage_roll','ability_check','saving_throw','reaction','target_selection','movement','item_use','choice'] },
     roll: {
       type: ['object','null'],
       properties: {
-        label: { type: 'string' }, ability: { type: ['string','null'] }, skill: { type: ['string','null'] },
-        dc_visible: { type: 'boolean' }, dc: { type: ['number','null'] }, advantage: { type: 'boolean' },
-        disadvantage: { type: 'boolean' }, reason: { type: ['string','null'] }
+        label: { type: 'string' },
+        expression: { type: 'string' },
+        mode: { type: 'string', enum: ['normal','advantage','disadvantage'] },
+        ability: { type: ['string','null'] },
+        skill: { type: ['string','null'] },
+        dc_visible: { type: 'boolean' },
+        dc: { type: ['number','null'] },
+        reason: { type: ['string','null'] }
       },
-      required: ['label','ability','skill','dc_visible','dc','advantage','disadvantage','reason']
+      required: ['label','expression','mode','ability','skill','dc_visible','dc','reason']
     },
     target_options: { type: 'array', items: { type: 'string' } },
     state_effects: {
@@ -31,7 +37,7 @@ const RESPONSE_SCHEMA = {
     hidden_notes: { type: 'string' },
     rules_note: { type: 'string' }
   },
-  required: ['narration','consumes_scene_action','action_required','roll','target_options','state_effects','hidden_notes','rules_note']
+  required: ['narration','response_visibility','consumes_scene_action','action_required','roll','target_options','state_effects','hidden_notes','rules_note']
 };
 
 function corsHeaders(origin) {
@@ -53,13 +59,18 @@ function systemPrompt() {
 
 Rules and authority:
 - Use D&D 5e 2024 rules only.
+- The supplied campaign and character state is authoritative.
 - The human player always performs player-facing rolls: attacks, damage, checks, saves, death saves, concentration, rerolls, and reactions.
-- Never fabricate a player roll result.
+- Never fabricate or assume a player roll result.
+- When a player-facing roll is required, STOP before resolving it and return the exact dice expression in roll.expression, for example 1d20+5, 2d6+3, or 1d8. Set roll.mode to normal, advantage, or disadvantage. The player should only need to press Roll.
 - Once an attack hits and damage is required, damage is committed; do not offer a cancel/back-out option before the damage roll resolves.
 - NPC and enemy rolls may be resolved by the AI.
 - Respect action, bonus action, reaction, movement, concentration, conditions, resources, cover, visibility, line of sight, weapon mastery, spell areas, rests, and durations.
 - Friendly fire and PvP are legal when the rules permit them.
-- Hide secret information, hidden DCs, traps, unrevealed enemies, secret doors, and unknown item properties unless legitimately discovered.
+- Public actions, visible attacks, ordinary movement, visible consequences, and non-secret information use response_visibility=party.
+- Use response_visibility=private only when the player explicitly asks or acts secretly, or when the response contains information only that player should know.
+- Hide secret information, hidden DCs, traps, unrevealed enemies, secret doors, unknown item properties, and private NPC state unless legitimately discovered.
+- Never leak private information through narration marked party, public metadata, or public state effects.
 - Do not reveal puzzle answers. Give only information the character could know.
 - Rules questions are free. In-world investigation can consume scene time/actions when appropriate.
 - Combat decision windows are 6 real-world hours. Reaction windows are 1 real-world hour. A D&D combat round remains 6 seconds in-world.
@@ -83,7 +94,7 @@ export default {
     const campaignState = body?.campaignState && typeof body.campaignState === 'object' ? body.campaignState : {};
     const context = body?.context && typeof body.context === 'object' ? body.context : {};
     if (!message) return json({ ok: false, error: 'message is required' }, 400, origin);
-    if (message.length > 8000) return json({ ok: false, error: 'message too long' }, 413, origin);
+    if (message.length > 12000) return json({ ok: false, error: 'message too long' }, 413, origin);
 
     const stateText = JSON.stringify(campaignState);
     const contextText = JSON.stringify(context);
