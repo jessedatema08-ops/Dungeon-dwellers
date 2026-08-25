@@ -1,5 +1,5 @@
-const CACHE='dungeon-dwellers-final-v21-20260825';
-const ASSETS=['./','./index.html','./production.css','./final-runtime.css','./config.js','./supabase-client.js','./dice-engine.js','./rules-engine.js','./ai-provider.js','./map-engine.js','./map-ai-integration.js','./production-app.js','./navigation-layout.js','./community-chat.js','./character-system.js','./character-importer.js','./final-runtime.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='dungeon-dwellers-final-v22-20260825';
+const ASSETS=['./','./index.html','./production.css','./config.js','./supabase-client.js','./dice-engine.js','./rules-engine.js','./ai-provider.js','./map-engine.js','./map-ai-integration.js','./production-app.js','./navigation-layout.js','./community-chat.js','./character-system.js','./character-importer.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==self.location.origin)return;e.respondWith(fetch(e.request,{cache:'no-store'}).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy)).catch(()=>{});return r;}).catch(()=>caches.match(e.request,{ignoreSearch:true}).then(r=>r||caches.match('./index.html'))));});
